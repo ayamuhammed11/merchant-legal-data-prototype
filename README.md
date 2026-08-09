@@ -20,6 +20,7 @@ It lives as a **Legal Data** sub-tab beside **All documents** on a merchant acco
 - **Conditional requirements** — VAT Registration Number only becomes required once VAT Status is set to *Registered*.
 - **Cancel vs. discard** — on a card that was never saved the footer button reads **Cancel** and removes the card entirely; once it holds saved data it reads **Discard changes** and reverts the fields to their last saved values.
 - **Provenance** — every value records who entered it and when, shown under the field. The source is tagged `Manual`, leaving room for an OCR pass to populate the same fields later without changing the screen.
+- **Events** — a full audit trail at the bottom of the page: sections added or cancelled, and every value filled, edited or cleared, each expanding to show the old and new value per field.
 
 ## Running it
 

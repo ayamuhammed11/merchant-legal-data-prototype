@@ -207,6 +207,32 @@
     background: var(--pill-bg); color: var(--pill-text); border-radius: 3px; padding: 2px 5px; }
   .src-chip.ocr { background: var(--accent-10); color: #006A66; }
 
+  /* ---------- Events feed ---------- */
+  .event-item { display: flex; align-items: flex-start; gap: 16px; padding: 18px 4px;
+    border-bottom: 1px solid var(--border-subtle); }
+  .event-item:last-child { border-bottom: none; }
+  .ev-icon { width: 40px; height: 40px; border-radius: 50%; background: #E3E5E5; color: var(--cadet-base);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ev-icon svg { width: 17px; height: 17px; }
+  /* Icon is tinted by action — green: created · blue: captured · yellow: updated · red: deleted */
+  .ev-icon.created { background: var(--success-bg); color: #388E3B; }
+  .ev-icon.captured { background: var(--ocean-10); color: var(--primary); }
+  .ev-icon.updated { background: #FFF7E8; color: #92620A; }
+  .ev-icon.deleted { background: var(--destructive-bg); color: var(--destructive); }
+  .ev-body { min-width: 0; padding-top: 1px; flex: 1; }
+  .ev-ts { font-size: 13px; color: var(--cadet-04); }
+  .ev-sentence { font-size: 14px; color: var(--cadet-04); margin-top: 7px; line-height: 1.45; }
+  .ev-sentence b { font-weight: 700; color: var(--foreground); }
+  .ev-changes { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .ev-changes li { font-size: 12.5px; color: var(--cadet-base); line-height: 1.5;
+    background: #FCFCFD; border: 1px solid var(--border-subtle); border-radius: var(--radius); padding: 7px 10px; }
+  .ev-changes .fld { font-weight: 600; color: var(--foreground); }
+  .ev-changes .val { font-family: 'Noto Sans', monospace; color: var(--foreground); }
+  .ev-changes .none { color: var(--cadet-05); font-style: italic; }
+  .ev-changes .arrow { color: var(--cadet-05); margin: 0 4px; }
+  .events-empty { display: none; text-align: center; font-size: 13px; color: var(--cadet-05); padding: 26px 0 14px; }
+  .events-empty.show { display: block; }
+
   /* ---------- Add-document modal ---------- */
   .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(16,24,40,.5); z-index: 80;
     align-items: flex-start; justify-content: center; padding: 60px 16px; overflow-y: auto; }
@@ -382,6 +408,21 @@
 
       <!-- One card per document whose data has been added -->
       <div id="cardsHost"></div>
+
+      <!-- ══════════ Events ══════════ -->
+      <div class="card" style="margin-top:24px;">
+        <div class="card-head">
+          <svg class="hi ch-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"/></svg>
+          <div class="ch-grow">
+            <h2>Events</h2>
+            <p class="ch-sub">Full audit trail of this merchant's legal data — every document type added or removed, and every value filled, edited or cleared, with the old and new value, who did it and when.</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="eventsList"></div>
+          <div class="events-empty" id="eventsEmpty">No events recorded yet — actions on this merchant's legal data will appear here.</div>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -490,6 +531,7 @@
      ═══════════════════════════════════════════════════════════════ */
   let legalData = {};      // key -> { value, by, at, source }
   let added = [];          // document type ids the agent has added, in the order they were added
+  let events = [];         // full audit trail, newest first
 
   function load() {
     try {
@@ -498,17 +540,18 @@
         const p = JSON.parse(raw);
         legalData = p.legalData || {};
         added = (p.added || []).filter(id => DOC_TYPES.some(dt => dt.id === id));
+        events = p.events || [];
       }
     } catch (e) { /* start empty */ }
   }
   function persist() {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify({ legalData, added })); } catch (e) {}
+    try { localStorage.setItem(STORE_KEY, JSON.stringify({ legalData, added, events })); } catch (e) {}
   }
 
   function addType(id) {
     if (added.indexOf(id) === -1) {
       added.push(id);
-      persist();
+      addEvent('created', id, 'added the <b>' + esc(DOC_TYPES.find(d => d.id === id).name) + '</b> data section');
       toast(DOC_TYPES.find(d => d.id === id).name + ' added — enter its data below.');
     }
     renderAll();
@@ -674,6 +717,42 @@
     '</div>';
   }
 
+  /* ── Events ── */
+  const EV_ICON = {
+    created:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>',
+    captured: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/></svg>',
+    updated:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992V4.356m0 4.992-3.181-3.183a8.25 8.25 0 0 0-13.803 3.7M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7"/></svg>',
+    deleted:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>'
+  };
+
+  function addEvent(type, docId, text, changes) {
+    events.unshift({ type, doc: docId, at: Date.now(), by: CURRENT_USER, text, changes: changes || [] });
+    persist();
+  }
+
+  function valueCell(v) {
+    return v ? '<span class="val">' + esc(v) + '</span>' : '<span class="none">empty</span>';
+  }
+
+  function renderEvents() {
+    $('eventsEmpty').classList.toggle('show', !events.length);
+    $('eventsList').innerHTML = events.map(e => {
+      const detail = e.changes && e.changes.length
+        ? '<ul class="ev-changes">' + e.changes.map(c =>
+            '<li><span class="fld">' + esc(c.label) + '</span> — ' +
+            valueCell(c.from) + '<span class="arrow">→</span>' + valueCell(c.to) + '</li>').join('') + '</ul>'
+        : '';
+      return '<div class="event-item">' +
+        '<div class="ev-icon ' + e.type + '">' + (EV_ICON[e.type] || EV_ICON.updated) + '</div>' +
+        '<div class="ev-body">' +
+          '<div class="ev-ts">' + fmtStamp(e.at) + '</div>' +
+          '<div class="ev-sentence"><b>' + esc(e.by) + '</b> ' + e.text + '</div>' +
+          detail +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
   function renderCards() {
     if (!added.length) {
       $('cardsHost').innerHTML =
@@ -696,7 +775,9 @@
      ═══════════════════════════════════════════════════════════════ */
   function saveDoc(dtId) {
     const dt = DOC_TYPES.find(d => d.id === dtId);
-    let added = 0, changed = 0, cleared = 0, invalid = 0;
+    /* Named so they cannot shadow the outer `added` list of document types. */
+    let nFilled = 0, nEdited = 0, nCleared = 0, nInvalid = 0;
+    const changes = [];
 
     dt.fields.forEach(f => {
       const el = $('in_' + f.key);
@@ -705,21 +786,35 @@
       const prev = valueOf(f.key);
       if (v === prev) return;
 
-      if (v && f.pattern && !new RegExp(f.pattern).test(v.replace(/\s/g, ''))) invalid++;
+      if (v && f.pattern && !new RegExp(f.pattern).test(v.replace(/\s/g, ''))) nInvalid++;
 
-      if (!v) { delete legalData[f.key]; cleared++; }
+      /* Record the before/after for the audit trail, formatted the way the field displays. */
+      changes.push({
+        label: f.label,
+        from: prev ? (f.type === 'date' ? fmtDate(prev) : prev) : '',
+        to:   v    ? (f.type === 'date' ? fmtDate(v)    : v)    : ''
+      });
+
+      if (!v) { delete legalData[f.key]; nCleared++; }
       else {
         legalData[f.key] = { value: v, by: CURRENT_USER, at: Date.now(), source: 'manual' };
-        if (prev) changed++; else added++;
+        if (prev) nEdited++; else nFilled++;
       }
     });
 
-    if (!added && !changed && !cleared) { toast('Nothing to save — no values changed.'); return; }
+    if (!changes.length) { toast('Nothing to save — no values changed.'); return; }
+
+    const parts = [];
+    if (nFilled)  parts.push('filled <b>' + nFilled  + ' field' + (nFilled >1?'s':'') + '</b>');
+    if (nEdited)  parts.push('edited <b>' + nEdited  + ' field' + (nEdited >1?'s':'') + '</b>');
+    if (nCleared) parts.push('cleared <b>' + nCleared + ' field' + (nCleared>1?'s':'') + '</b>');
+    addEvent(nEdited || nCleared ? 'updated' : 'captured', dt.id,
+      parts.join(', ') + ' on <b>' + esc(dt.name) + '</b>', changes);
 
     persist();
     renderAll();
-    toast(invalid
-      ? 'Saved — ' + invalid + (invalid > 1 ? ' values still fail' : ' value still fails') + ' validation.'
+    toast(nInvalid
+      ? 'Saved — ' + nInvalid + (nInvalid > 1 ? ' values still fail' : ' value still fails') + ' validation.'
       : dt.name + ' data saved to the account.');
   }
 
@@ -732,7 +827,7 @@
 
     if (!saved) {
       added = added.filter(id => id !== dtId);
-      persist();
+      addEvent('deleted', dtId, 'cancelled the <b>' + esc(dt.name) + '</b> data section before saving any value');
       renderAll();
       toast(dt.name + ' cancelled.');
       return;
@@ -747,7 +842,7 @@
   /* ═══════════════════════════════════════════════════════════════
      8. Wiring
      ═══════════════════════════════════════════════════════════════ */
-  function renderAll() { renderSectionBar(); renderCards(); }
+  function renderAll() { renderSectionBar(); renderCards(); renderEvents(); }
 
   document.addEventListener('click', e => {
     const addOpt = e.target.closest('[data-add]');
