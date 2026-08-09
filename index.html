@@ -159,43 +159,20 @@
   .alert b { font-weight: 700; }
   .alert .a-body { font-size: 13.5px; }
 
-  /* ---------- Layout: picker + form ---------- */
-  .ld-layout { display: grid; grid-template-columns: 288px minmax(0, 1fr); gap: 22px; align-items: start; }
-
-  /* Document type picker */
-  .picker { border: 1px solid var(--border-subtle); border-radius: 8px; overflow: hidden; background: #fff;
-    position: sticky; top: 84px; }
-  .picker-head { padding: 14px 16px; border-bottom: 1px solid var(--border-subtle);
-    font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--cadet-05); }
-  .picker-foot { padding: 12px 16px; border-top: 1px solid var(--border-subtle); background: #FCFCFD; }
-  .add-btn { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%;
-    border: 1px dashed var(--border); background: #fff; border-radius: var(--radius); padding: 11px 12px;
-    font-size: 13px; font-weight: 600; color: var(--primary); cursor: pointer; }
-  .add-btn:hover { background: var(--ocean-10); border-color: var(--primary); }
-  .add-btn:disabled { color: var(--cadet-05); cursor: not-allowed; background: #fff; border-color: var(--border); }
-  .picker-empty { padding: 22px 16px; text-align: center; font-size: 12.5px; color: var(--cadet-05); line-height: 1.5; }
+  /* ---------- Section bar: the one and only Add entry point ---------- */
+  .section-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    flex-wrap: wrap; margin-bottom: 18px; }
+  .section-bar .sb-title { font-family: 'Outfit', sans-serif; font-size: 19px; font-weight: 700; color: var(--foreground); }
+  .section-bar .sb-count { font-family: 'Noto Sans', sans-serif; font-size: 13px; font-weight: 400;
+    color: var(--cadet-04); margin-left: 10px; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
 
   /* Empty state when nothing has been added yet */
-  .empty-card { border: 1px solid var(--border-subtle); border-radius: 8px; background: #fff;
-    padding: 54px 28px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 20px; }
+  .empty-card { border: 1px dashed var(--border); border-radius: 8px; background: #FCFCFD;
+    padding: 56px 28px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
   .empty-card svg { width: 40px; height: 40px; color: var(--cadet-06); }
   .empty-card .t { font-family: 'Outfit', sans-serif; font-size: 19px; font-weight: 700; color: var(--foreground); }
-  .empty-card .s { font-size: 13.5px; color: var(--cadet-04); line-height: 1.55; max-width: 380px; }
-  .empty-card .btn { margin-top: 8px; }
-  .pick { display: flex; align-items: flex-start; gap: 11px; width: 100%; text-align: left; background: none;
-    border: none; border-bottom: 1px solid var(--border-subtle); padding: 13px 16px; cursor: pointer; }
-  .pick:last-child { border-bottom: none; }
-  .pick:hover { background: #F7F8F8; }
-  .pick.on { background: var(--ocean-10); box-shadow: inset 3px 0 0 var(--primary); }
-  .pick svg { color: var(--cadet-04); margin-top: 1px; }
-  .pick.on svg { color: var(--primary); }
-  .pick .p-body { min-width: 0; flex: 1; display: flex; flex-direction: column; }
-  .pick .p-name { font-size: 13.5px; font-weight: 600; color: var(--foreground); line-height: 1.35; }
-  .pick.on .p-name { color: var(--primary); }
-  .pick .p-sub { font-size: 11.5px; color: var(--cadet-05); margin-top: 4px; }
-  .pick .p-sub.err { color: var(--destructive); font-weight: 600; }
-  .pick .p-sub.warn { color: #92620A; font-weight: 600; }
-  .pick .p-sub.ok { color: var(--success-text); font-weight: 600; }
+  .empty-card .s { font-size: 13.5px; color: var(--cadet-04); line-height: 1.55; max-width: 420px; }
 
   /* ---------- Form card ---------- */
   .card { background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px; margin-bottom: 20px; }
@@ -205,22 +182,9 @@
   .card-head .ch-ar { font-size: 13px; color: var(--cadet-05); direction: rtl; margin-top: 4px; }
   .card-head .ch-sub { font-size: 12.5px; color: var(--cadet-04); line-height: 1.5; margin: 6px 0 0; }
   .card-head .ch-grow { flex: 1; min-width: 0; }
-  .card-head .ch-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
   .card-body { padding: 22px; }
   .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
     padding: 13px 22px; background: #FCFCFD; border-top: 1px solid var(--border-subtle); border-radius: 0 0 8px 8px; }
-
-  .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: .04em;
-    text-transform: uppercase; border-radius: 20px; padding: 4px 10px; white-space: nowrap; }
-  .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-  .badge.ok   { background: var(--success-bg); color: var(--success-text); }
-  .badge.warn { background: var(--warning-bg); color: #92620A; }
-  .badge.err  { background: var(--destructive-bg); color: var(--destructive); }
-  .badge.neutral { background: var(--pill-bg); color: var(--pill-text); }
-
-  .doc-link { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--link);
-    cursor: pointer; background: none; border: none; padding: 0; margin-top: 9px; }
-  .doc-link:hover { text-decoration: underline; }
 
   .ld-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 20px; }
   .ld-field { display: flex; flex-direction: column; }
@@ -243,21 +207,7 @@
     background: var(--pill-bg); color: var(--pill-text); border-radius: 3px; padding: 2px 5px; }
   .src-chip.ocr { background: var(--accent-10); color: #006A66; }
 
-  /* ---------- Events ---------- */
-  .event-item { display: flex; align-items: flex-start; gap: 14px; padding: 15px 4px; border-bottom: 1px solid var(--border-subtle); }
-  .event-item:last-child { border-bottom: none; }
-  .ev-icon { width: 34px; height: 34px; border-radius: 50%; background: #E3E5E5; color: var(--cadet-base);
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .ev-icon svg { width: 15px; height: 15px; }
-  .ev-icon.captured { background: var(--ocean-10); color: var(--primary); }
-  .ev-icon.updated { background: var(--warning-bg); color: #92620A; }
-  .ev-body { min-width: 0; }
-  .ev-ts { font-size: 12px; color: var(--cadet-04); }
-  .ev-sentence { font-size: 13.5px; color: var(--cadet-04); margin-top: 5px; line-height: 1.45; }
-  .ev-sentence b { font-weight: 700; color: var(--foreground); }
-  .events-empty { text-align: center; font-size: 13px; color: var(--cadet-05); padding: 20px 0 10px; }
-
-  /* ---------- Add-type modal ---------- */
+  /* ---------- Add-document modal ---------- */
   .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(16,24,40,.5); z-index: 80;
     align-items: flex-start; justify-content: center; padding: 60px 16px; overflow-y: auto; }
   .modal-backdrop.open { display: flex; }
@@ -272,18 +222,16 @@
     cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .modal-close:hover { background: var(--muted); }
   .modal-body { padding: 16px 24px 24px; }
-  .type-opt { display: flex; align-items: flex-start; gap: 12px; width: 100%; text-align: left;
+  .type-opt { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
     border: 1px solid var(--border); border-radius: var(--radius); background: #fff;
-    padding: 14px 16px; margin-bottom: 10px; cursor: pointer; }
+    padding: 14px 16px; margin-bottom: 8px; cursor: pointer; }
   .type-opt:last-child { margin-bottom: 0; }
   .type-opt:hover { border-color: var(--primary); background: var(--ocean-10); }
-  .type-opt svg.t-ico { color: var(--cadet-04); margin-top: 2px; }
+  .type-opt svg.t-ico { color: var(--cadet-04); flex-shrink: 0; }
   .type-opt:hover svg.t-ico { color: var(--primary); }
-  .type-opt .t-body { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; }
-  .type-opt .t-name { font-size: 14px; font-weight: 600; color: var(--foreground); }
-  .type-opt .t-ar { font-size: 12px; color: var(--cadet-05); direction: rtl; margin-top: 4px; }
-  .type-opt .t-sub { font-size: 12px; color: var(--cadet-04); margin-top: 6px; line-height: 1.45; }
-  .type-opt .t-go { color: var(--cadet-05); flex-shrink: 0; margin-top: 2px; }
+  .type-opt .t-name { flex: 1; min-width: 0; font-size: 14px; font-weight: 600; color: var(--foreground); }
+  .type-opt:hover .t-name { color: var(--primary); }
+  .type-opt .t-go { color: var(--cadet-05); flex-shrink: 0; }
   .type-opt:hover .t-go { color: var(--primary); }
   .modal-empty { text-align: center; font-size: 13.5px; color: var(--cadet-04); padding: 26px 0; line-height: 1.55; }
 
@@ -294,10 +242,6 @@
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   /* ---------- Responsive ---------- */
-  @media (max-width: 1100px) {
-    .ld-layout { grid-template-columns: 1fr; }
-    .picker { position: static; }
-  }
   @media (max-width: 1000px) { .content { padding: 24px 22px 60px; } .topbar { padding: 12px 22px; } }
   @media (max-width: 900px) {
     .sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%);
@@ -419,45 +363,25 @@
       <div class="alert info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
         <div class="a-body">
-          Add the document type you need, then type its data as text. Values are saved on the account and can be edited at any time.
-          The fields shown come from each type's definition in <a href="document-types.html" style="color:var(--link);font-weight:600;">Document Types</a>.
+          Add a document type, then type its data as text. Values are saved on the account and can be edited at any time.
+          The fields shown come from that type's definition in <a href="document-types.html" style="color:var(--link);font-weight:600;">Document Types</a>.
         </div>
       </div>
 
-      <div class="ld-layout">
-        <!-- Added document types -->
+      <!-- The single Add entry point -->
+      <div class="section-bar">
         <div>
-          <div class="picker">
-            <div class="picker-head">Document data</div>
-            <div id="pickerList"></div>
-            <div class="picker-foot">
-              <button class="add-btn" id="btnAdd" type="button">
-                <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                Add document data
-              </button>
-            </div>
-          </div>
+          <span class="sb-title">Document data</span>
+          <span class="sb-count" id="sbCount"></span>
         </div>
-
-        <!-- Selected type's form -->
-        <div>
-          <div id="formHost"></div>
-
-          <div class="card" id="histCard">
-            <div class="card-head">
-              <svg class="hi ch-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"/></svg>
-              <div class="ch-grow">
-                <h2>History</h2>
-                <p class="ch-sub" id="histSub">Every change to this document type's data on this account.</p>
-              </div>
-            </div>
-            <div class="card-body">
-              <div id="eventsList"></div>
-              <div class="events-empty" id="eventsEmpty">No changes recorded for this document type yet.</div>
-            </div>
-          </div>
-        </div>
+        <button class="btn btn-primary" id="btnAdd" type="button">
+          <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          Add document data
+        </button>
       </div>
+
+      <!-- One card per document whose data has been added -->
+      <div id="cardsHost"></div>
     </div>
   </main>
 
@@ -467,7 +391,7 @@
       <div class="modal-head">
         <div>
           <h2 id="addTitle">Add document data</h2>
-          <p class="m-sub">Choose the document type whose data you need to enter for this merchant.</p>
+          <p class="m-sub">Choose the document type whose data you want to enter.</p>
         </div>
         <button class="modal-close" id="addClose" aria-label="Close"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>
       </div>
@@ -494,7 +418,6 @@
     {
       id: 'nid', name: 'National ID', nameAr: 'بطاقة الرقم القومي',
       sub: 'Owner identity, read from the front and back images.',
-      file: 'National ID (Front) · National ID (Back)', fileStatus: 'Approved',
       icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>',
       fields: [
         { key:'nid_number', label:'National ID Number', type:'text', required:true, pattern:'^\\d{14}$', hint:'14 digits, as printed on the card.', placeholder:'29801011234567' },
@@ -506,7 +429,6 @@
     {
       id: 'cr', name: 'Commercial Registration', nameAr: 'السجل التجاري',
       sub: 'The legal existence of the business.',
-      file: 'Commercial Registration.pdf', fileStatus: 'Approved',
       icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>',
       fields: [
         { key:'cr_number', label:'CR Number', type:'text', required:true, pattern:'^\\d{4,8}$', hint:'4–8 digits.', placeholder:'123456' },
@@ -521,7 +443,6 @@
     {
       id: 'tax', name: 'Tax Identification Card', nameAr: 'البطاقة الضريبية',
       sub: 'Tax registration details of the business.',
-      file: 'Tax Card.pdf', fileStatus: 'Approved',
       icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25 15 8.25m-5.25.75h.008v.008H9.75V9Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm4.5 4.5h.008v.008h-.008v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>',
       fields: [
         { key:'tax_number', label:'Tax Registration Number', type:'text', required:true, pattern:'^\\d{3}-?\\d{3}-?\\d{3}$', hint:'9 digits, e.g. 123-456-789.', placeholder:'123-456-789' },
@@ -533,7 +454,6 @@
     {
       id: 'vat', name: 'VAT Registration Certificate', nameAr: 'شهادة التسجيل بضريبة القيمة المضافة',
       sub: 'Captured when the merchant is VAT-registered.',
-      file: 'Not uploaded', fileStatus: 'Missing',
       icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/>',
       fields: [
         { key:'vat_status', label:'VAT Status', type:'select', required:true, options:['Registered','Exempt','Not registered'] },
@@ -543,13 +463,24 @@
     {
       id: 'bank', name: 'Bank Account Letter / IBAN proof', nameAr: 'خطاب الحساب البنكي',
       sub: 'Where the merchant is paid out.',
-      file: 'Bank Letter.pdf', fileStatus: 'Pending review',
       icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"/>',
       fields: [
         { key:'bank_name', label:'Bank', type:'select', required:true, options:['Bank Misr','National Bank of Egypt','QNB Alahli','CIB','Banque du Caire','HSBC Egypt','Other'] },
         { key:'bank_holder', label:'Account Holder Name', type:'text', required:true, hint:'Must match the legal company name on the CR.', placeholder:'Space X for Trading LLC' },
         { key:'bank_iban', label:'IBAN', type:'text', required:true, pattern:'^EG\\d{27}$', hint:'EG followed by 27 digits.', placeholder:'EG380019000500000000263180002' },
         { key:'bank_swift', label:'SWIFT / BIC', type:'text', required:false, placeholder:'BMISEGCX' }
+      ]
+    },
+    {
+      id: 'utility', name: 'Utility Bill', nameAr: 'فاتورة مرافق',
+      sub: 'Proof of the business address.',
+      icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>',
+      fields: [
+        { key:'util_provider', label:'Utility Provider', type:'select', required:true, options:['Electricity','Water','Gas','Landline / Internet'] },
+        { key:'util_account', label:'Account / Meter Number', type:'text', required:true, placeholder:'0123456789' },
+        { key:'util_holder', label:'Bill Holder Name', type:'text', required:true, placeholder:'Space X for Trading LLC' },
+        { key:'util_issue', label:'Bill Date', type:'date', required:true },
+        { key:'util_address', label:'Address on Bill', type:'text', required:true, full:true, placeholder:'12 El Nasr St., Nasr City, Cairo' }
       ]
     }
   ];
@@ -558,9 +489,7 @@
      2. Values stored on the account
      ═══════════════════════════════════════════════════════════════ */
   let legalData = {};      // key -> { value, by, at, source }
-  let events = [];         // newest first, each tagged with its doc type
   let added = [];          // document type ids the agent has added, in the order they were added
-  let selectedId = null;
 
   function load() {
     try {
@@ -568,17 +497,12 @@
       if (raw) {
         const p = JSON.parse(raw);
         legalData = p.legalData || {};
-        events = p.events || [];
-        added = p.added || DOC_TYPES.filter(dt => dt.fields.some(f => valueOf(f.key))).map(dt => dt.id);
-        selectedId = added[0] || null;
-        return;
+        added = (p.added || []).filter(id => DOC_TYPES.some(dt => dt.id === id));
       }
-    } catch (e) { /* fall through to seed */ }
-    seed();
-    selectedId = added[0] || null;
+    } catch (e) { /* start empty */ }
   }
   function persist() {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify({ legalData, events, added })); } catch (e) {}
+    try { localStorage.setItem(STORE_KEY, JSON.stringify({ legalData, added })); } catch (e) {}
   }
 
   function addType(id) {
@@ -587,36 +511,15 @@
       persist();
       toast(DOC_TYPES.find(d => d.id === id).name + ' added — enter its data below.');
     }
-    selectedId = id;
     renderAll();
+    const card = document.querySelector('[data-doc="' + id + '"]');
+    if (card) {
+      card.scrollIntoView({ behavior:'smooth', block:'start' });
+      const first = card.querySelector('.inp');
+      if (first) setTimeout(() => first.focus({ preventScroll: true }), 350);
+    }
   }
 
-  /* A partially-filled account so every field state is visible on first load. */
-  function seed() {
-    const t = Date.now();
-    const put = (k, v, ago) => legalData[k] = { value: v, by: CURRENT_USER, at: t - ago, source: 'manual' };
-    put('nid_number','29801011234567', 864e5 * 6);
-    put('nid_holder','Elon Ahmed Mostafa Space', 864e5 * 6);
-    put('nid_expiry','2029-04-30', 864e5 * 6);
-    put('cr_number','148237', 864e5 * 4);
-    put('cr_office','Cairo', 864e5 * 4);
-    put('cr_legal_form','Limited Liability Company (LLC)', 864e5 * 4);
-    put('cr_issue','2021-06-14', 864e5 * 4);
-    put('cr_expiry', isoInDays(41), 864e5 * 4);
-    put('cr_activity','Retail trade of consumer electronics; online sales', 864e5 * 4);
-    put('bank_name','Bank Misr', 864e5 * 2);
-    put('bank_holder','Space X for Trading LLC', 864e5 * 2);
-    events = [
-      { type:'captured', doc:'nid',  at: t - 864e5*6, by: CURRENT_USER, text: 'captured <b>3 fields</b>' },
-      { type:'captured', doc:'cr',   at: t - 864e5*4, by: CURRENT_USER, text: 'captured <b>6 fields</b>' },
-      { type:'captured', doc:'bank', at: t - 864e5*2, by: CURRENT_USER, text: 'captured <b>2 fields</b>' }
-    ];
-    added = ['nid', 'cr', 'bank'];
-  }
-  function isoInDays(n) {
-    const d = new Date(); d.setDate(d.getDate() + n);
-    return d.toISOString().slice(0, 10);
-  }
 
   /* ═══════════════════════════════════════════════════════════════
      3. Field helpers
@@ -662,19 +565,6 @@
     return p(d.getDate()) + ' ' + d.toLocaleString('en-US',{month:'short'}) + ' ' + d.getFullYear() + ', ' + p(h) + ':' + p(d.getMinutes()) + ' ' + ap;
   }
 
-  /* Card- and picker-level status for one document type */
-  function docState(dt) {
-    const states = dt.fields.map(f => ({ f, s: fieldState(f) }));
-    const filled = dt.fields.filter(f => valueOf(f.key)).length;
-    if (!filled) return { key:'neutral', label:'Not started', short:'No data yet' };
-    if (states.some(x => x.s === 'expired')) return { key:'err', label:'Expired', short:'Expired' };
-    if (states.some(x => x.s === 'invalid')) return { key:'err', label:'Invalid value', short:'Invalid value' };
-    const missing = states.filter(x => isRequired(x.f) && x.s === 'empty').length;
-    if (missing) return { key:'warn', label: missing + ' field' + (missing>1?'s':'') + ' missing', short: missing + ' missing' };
-    if (states.some(x => x.s === 'expiring')) return { key:'warn', label:'Expiring soon', short:'Expiring soon' };
-    return { key:'ok', label:'Complete', short:'Complete' };
-  }
-
   /* ═══════════════════════════════════════════════════════════════
      4. Toast
      ═══════════════════════════════════════════════════════════════ */
@@ -687,35 +577,21 @@
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     5. Render — picker
+     5. Render — section bar
      ═══════════════════════════════════════════════════════════════ */
-  function renderPicker() {
-    if (!added.length) {
-      $('pickerList').innerHTML = '<div class="picker-empty">No document data added yet.</div>';
-    } else {
-      $('pickerList').innerHTML = added.map(id => {
-        const dt = DOC_TYPES.find(d => d.id === id);
-        const st = docState(dt);
-        const filled = dt.fields.filter(f => valueOf(f.key)).length;
-        return '<button class="pick' + (dt.id === selectedId ? ' on' : '') + '" data-pick="' + dt.id + '" type="button">' +
-          '<svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">' + dt.icon + '</svg>' +
-          '<span class="p-body">' +
-            '<span class="p-name">' + esc(dt.name) + '</span>' +
-            '<span class="p-sub ' + (st.key === 'neutral' ? '' : st.key) + '">' +
-              filled + ' of ' + dt.fields.length + ' filled · ' + esc(st.short) +
-            '</span>' +
-          '</span>' +
-        '</button>';
-      }).join('');
-    }
-
-    const remaining = DOC_TYPES.filter(dt => added.indexOf(dt.id) === -1).length;
+  function renderSectionBar() {
+    const total = DOC_TYPES.length;
+    const remaining = total - added.length;
+    $('sbCount').textContent = added.length
+      ? added.length + ' of ' + total + ' document types recorded'
+      : '';
     $('btnAdd').disabled = remaining === 0;
-    $('btnAdd').lastChild.textContent = remaining === 0 ? ' All types added' : ' Add document data';
+    $('btnAdd').lastChild.textContent = remaining === 0 ? ' All document types added' : ' Add document data';
   }
 
-  /* ── Add-type modal ── */
+  /* ── Chooser: the documents already uploaded on this account ── */
   const CHEVRON = '<svg class="t-go hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>';
+
 
   function openAdd() {
     const remaining = DOC_TYPES.filter(dt => added.indexOf(dt.id) === -1);
@@ -723,13 +599,9 @@
       ? remaining.map(dt =>
           '<button class="type-opt" data-add="' + dt.id + '" type="button">' +
             '<svg class="t-ico hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' + dt.icon + '</svg>' +
-            '<span class="t-body">' +
-              '<span class="t-name">' + esc(dt.name) + '</span>' +
-              '<span class="t-ar">' + esc(dt.nameAr) + '</span>' +
-              '<span class="t-sub">' + dt.fields.length + ' fields · ' + esc(dt.sub) + '</span>' +
-            '</span>' + CHEVRON +
+            '<span class="t-name">' + esc(dt.name) + '</span>' + CHEVRON +
           '</button>').join('')
-      : '<div class="modal-empty">Every document type already has a data section on this account.</div>';
+      : '<div class="modal-empty">Every document type already has a data card on this account.</div>';
     $('addBackdrop').classList.add('open');
   }
   function closeAdd() { $('addBackdrop').classList.remove('open'); }
@@ -737,8 +609,6 @@
   /* ═══════════════════════════════════════════════════════════════
      6. Render — form for the selected type
      ═══════════════════════════════════════════════════════════════ */
-  const FILE_ICON = '<svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>';
-
   function fieldHTML(f) {
     const v = valueOf(f.key);
     const st = fieldState(f);
@@ -773,94 +643,56 @@
     '</div>';
   }
 
-  function renderForm() {
-    const dt = DOC_TYPES.find(d => d.id === selectedId);
-
-    if (!dt) {
-      $('formHost').innerHTML =
-        '<div class="empty-card">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>' +
-          '<div class="t">No document data yet</div>' +
-          '<div class="s">Choose the document type you need to record for this merchant, then type its values as text. Everything you save stays editable.</div>' +
-          '<button class="btn btn-primary" id="emptyAdd" type="button">' +
-            '<svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>' +
-            'Add document data</button>' +
-        '</div>';
-      $('histCard').style.display = 'none';
-      return;
-    }
-    $('histCard').style.display = '';
-
-    const st = docState(dt);
+  /* One card per added document */
+  function cardHTML(dt) {
     const filled = dt.fields.filter(f => valueOf(f.key)).length;
-    const missingFile = dt.fileStatus === 'Missing';
-
     const stamps = dt.fields.map(f => legalData[f.key] && legalData[f.key].at).filter(Boolean);
     const lastLine = stamps.length
       ? 'Last saved ' + fmtStamp(Math.max.apply(null, stamps)) + ' by ' + CURRENT_USER
       : 'Never saved';
 
-    $('formHost').innerHTML =
-      '<div class="card" data-doc="' + dt.id + '">' +
-        '<div class="card-head">' +
-          '<svg class="hi ch-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' + dt.icon + '</svg>' +
-          '<div class="ch-grow">' +
-            '<h2>' + esc(dt.name) + '</h2>' +
-            '<div class="ch-ar">' + esc(dt.nameAr) + '</div>' +
-            '<p class="ch-sub">' + esc(dt.sub) + '</p>' +
-            '<button class="doc-link" data-open-file="' + dt.id + '">' + FILE_ICON + esc(dt.file) + ' · ' + esc(dt.fileStatus) + '</button>' +
-          '</div>' +
-          '<div class="ch-right"><span class="badge ' + st.key + '"><span class="dot"></span>' + esc(st.label) + '</span></div>' +
+    return '<div class="card" data-doc="' + dt.id + '">' +
+      '<div class="card-head">' +
+        '<svg class="hi ch-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' + dt.icon + '</svg>' +
+        '<div class="ch-grow">' +
+          '<h2>' + esc(dt.name) + '</h2>' +
+          '<div class="ch-ar">' + esc(dt.nameAr) + '</div>' +
+          '<p class="ch-sub">' + esc(dt.sub) + '</p>' +
         '</div>' +
-        '<div class="card-body">' +
-          (missingFile ? '<div class="alert warn">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>' +
-            '<div class="a-body">No file uploaded for this type yet. Data can still be entered, and stays editable once the document arrives.</div></div>' : '') +
-          '<div class="ld-grid">' + dt.fields.map(fieldHTML).join('') + '</div>' +
+      '</div>' +
+      '<div class="card-body">' +
+        '<div class="ld-grid">' + dt.fields.map(fieldHTML).join('') + '</div>' +
+      '</div>' +
+      '<div class="card-foot">' +
+        '<span style="font-size:12px;color:var(--cadet-05);">' + filled + ' of ' + dt.fields.length + ' fields filled · ' + esc(lastLine) + '</span>' +
+        '<div style="display:flex;gap:8px;">' +
+          '<button class="btn btn-ghost btn-sm" data-reset="' + dt.id + '">' +
+            (stamps.length ? 'Discard changes' : 'Cancel') + '</button>' +
+          '<button class="btn btn-primary btn-sm" data-save="' + dt.id + '">Save data</button>' +
         '</div>' +
-        '<div class="card-foot">' +
-          '<span style="font-size:12px;color:var(--cadet-05);">' + filled + ' of ' + dt.fields.length + ' fields filled · ' + esc(lastLine) + '</span>' +
-          '<div style="display:flex;gap:8px;">' +
-            '<button class="btn btn-ghost btn-sm" data-reset="' + dt.id + '">Discard changes</button>' +
-            '<button class="btn btn-primary btn-sm" data-save="' + dt.id + '">Save data</button>' +
-          '</div>' +
-        '</div>' +
-      '</div>';
+      '</div>' +
+    '</div>';
+  }
 
-    $('histSub').textContent = 'Every change to the ' + dt.name + ' data on this account.';
+  function renderCards() {
+    if (!added.length) {
+      $('cardsHost').innerHTML =
+        '<div class="empty-card">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>' +
+          '<div class="t">No document data yet</div>' +
+          '<div class="s">Use <b>Add document data</b> above to pick a document type, then type its values as text. Each one gets its own card here.</div>' +
+        '</div>';
+      return;
+    }
+    $('cardsHost').innerHTML = added
+      .map(id => DOC_TYPES.find(d => d.id === id))
+      .filter(Boolean)
+      .map(cardHTML)
+      .join('');
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     7. Render — history for the selected type
-     ═══════════════════════════════════════════════════════════════ */
-  const EV_ICON = {
-    captured: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/></svg>',
-    updated:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992V4.356m0 4.992-3.181-3.183a8.25 8.25 0 0 0-13.803 3.7M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7"/></svg>'
-  };
-
-  function addEvent(type, text) {
-    events.unshift({ type, doc: selectedId, at: Date.now(), by: CURRENT_USER, text });
-    if (events.length > 80) events.pop();
-    persist();
-    renderEvents();
-  }
-
-  function renderEvents() {
-    if (!selectedId) return;
-    const mine = events.filter(e => e.doc === selectedId);
-    $('eventsEmpty').style.display = mine.length ? 'none' : 'block';
-    $('eventsList').innerHTML = mine.map(e =>
-      '<div class="event-item">' +
-        '<div class="ev-icon ' + e.type + '">' + (EV_ICON[e.type] || EV_ICON.updated) + '</div>' +
-        '<div class="ev-body">' +
-          '<div class="ev-ts">' + fmtStamp(e.at) + '</div>' +
-          '<div class="ev-sentence"><b>' + esc(e.by) + '</b> ' + e.text + '</div>' +
-        '</div>' +
-      '</div>').join('');
-  }
-
-  /* ═══════════════════════════════════════════════════════════════
-     8. Save / discard
+     7. Save / discard
      ═══════════════════════════════════════════════════════════════ */
   function saveDoc(dtId) {
     const dt = DOC_TYPES.find(d => d.id === dtId);
@@ -884,12 +716,6 @@
 
     if (!added && !changed && !cleared) { toast('Nothing to save — no values changed.'); return; }
 
-    const parts = [];
-    if (added)   parts.push('filled <b>' + added + ' field' + (added>1?'s':'') + '</b>');
-    if (changed) parts.push('edited <b>' + changed + ' field' + (changed>1?'s':'') + '</b>');
-    if (cleared) parts.push('cleared <b>' + cleared + ' field' + (cleared>1?'s':'') + '</b>');
-    addEvent(added && !changed ? 'captured' : 'updated', parts.join(', '));
-
     persist();
     renderAll();
     toast(invalid
@@ -897,28 +723,40 @@
       : dt.name + ' data saved to the account.');
   }
 
-  function resetDoc() {
-    renderForm();
+  /* Discard: revert this card to its saved values.
+     If it was never saved, there is nothing to revert to — cancel the card entirely. */
+  function resetDoc(dtId) {
+    const dt = DOC_TYPES.find(d => d.id === dtId);
+    if (!dt) return;
+    const saved = dt.fields.some(f => valueOf(f.key));
+
+    if (!saved) {
+      added = added.filter(id => id !== dtId);
+      persist();
+      renderAll();
+      toast(dt.name + ' cancelled.');
+      return;
+    }
+
+    /* Re-render only this card, so unsaved edits in other cards survive. */
+    const card = document.querySelector('[data-doc="' + dtId + '"]');
+    if (card) card.outerHTML = cardHTML(dt);
     toast('Unsaved changes discarded.');
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     9. Wiring
+     8. Wiring
      ═══════════════════════════════════════════════════════════════ */
-  function renderAll() { renderPicker(); renderForm(); renderEvents(); }
+  function renderAll() { renderSectionBar(); renderCards(); }
 
   document.addEventListener('click', e => {
-    const pick = e.target.closest('[data-pick]');
-    if (pick) { selectedId = pick.getAttribute('data-pick'); renderAll(); return; }
     const addOpt = e.target.closest('[data-add]');
     if (addOpt) { closeAdd(); addType(addOpt.getAttribute('data-add')); return; }
-    if (e.target.closest('#btnAdd') || e.target.closest('#emptyAdd')) { openAdd(); return; }
+    if (e.target.closest('#btnAdd')) { openAdd(); return; }
     const save = e.target.closest('[data-save]');
     if (save) { saveDoc(save.getAttribute('data-save')); return; }
     const reset = e.target.closest('[data-reset]');
-    if (reset) { resetDoc(); return; }
-    const file = e.target.closest('[data-open-file]');
-    if (file) { toast('Opens the file in the All documents sub-tab.'); return; }
+    if (reset) { resetDoc(reset.getAttribute('data-reset')); return; }
   });
 
   $('addClose').addEventListener('click', closeAdd);
