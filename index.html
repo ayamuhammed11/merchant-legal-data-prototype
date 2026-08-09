@@ -189,9 +189,15 @@
   .ld-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 20px; }
   .ld-field { display: flex; flex-direction: column; }
   .ld-field.full { grid-column: 1 / -1; }
-  .ld-field label { font-size: 12.5px; font-weight: 600; color: var(--cadet-base); margin-bottom: 7px; }
+  .ld-field label { font-size: 12.5px; font-weight: 600; color: var(--cadet-base); margin-bottom: 7px;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .ld-field label .f-label { min-width: 0; }
   .ld-field label .req { color: var(--destructive); }
   .ld-field label .opt { font-weight: 400; color: var(--cadet-05); }
+  .ld-field label .f-tags { display: flex; gap: 5px; flex-shrink: 0; }
+  .f-tag { font-size: 9.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+    border-radius: 3px; padding: 2px 6px; white-space: nowrap; }
+  .f-tag.side { background: var(--pill-bg); color: var(--pill-text); }
   .inp { width: 100%; border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px;
     font-family: inherit; font-size: 14px; color: var(--foreground); background: #fff; height: 42px; }
   select.inp { cursor: pointer; }
@@ -455,41 +461,99 @@
         This mirrors the definition in the Document Types module —
         add a field there and it shows up here with no code change.
      ═══════════════════════════════════════════════════════════════ */
+  /* Shared option lists */
+  const GENDERS = ['Male', 'Female'];
+  /* ISO country list — trimmed to the ones this market actually sees, plus Other. */
+  const COUNTRIES = ['Egypt','Saudi Arabia','United Arab Emirates','Kuwait','Qatar','Bahrain','Oman','Jordan',
+    'Lebanon','Syria','Iraq','Palestine','Yemen','Libya','Sudan','Morocco','Tunisia','Algeria',
+    'United Kingdom','United States','Canada','France','Germany','Italy','Spain','Netherlands',
+    'Turkey','China','India','Pakistan','Bangladesh','Philippines','Nigeria','Kenya','South Africa','Other'];
+  const NATIONALITIES = ['Egyptian','Saudi','Emirati','Kuwaiti','Qatari','Bahraini','Omani','Jordanian',
+    'Lebanese','Syrian','Iraqi','Palestinian','Yemeni','Libyan','Sudanese','Moroccan','Tunisian','Algerian',
+    'British','American','Canadian','French','German','Italian','Spanish','Dutch',
+    'Turkish','Chinese','Indian','Pakistani','Bangladeshi','Filipino','Nigerian','Kenyan','South African','Other'];
+  const LEGAL_FORMS = ['Sole proprietorship','LLC','JSC','Partnership','Branch of foreign company'];
+
   const DOC_TYPES = [
     {
-      id: 'nid', name: 'National ID', nameAr: 'بطاقة الرقم القومي',
-      sub: 'Owner identity, read from the front and back images.',
+      id: 'nid', name: 'National ID (Front & Back)', nameAr: 'بطاقة الرقم القومي',
+      sub: 'Applies to Egyptian owners and authorised signatories. Alternative to Passport, not additional.',
       icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>',
       fields: [
-        { key:'nid_number', label:'National ID Number', type:'text', required:true, pattern:'^\\d{14}$', hint:'14 digits, as printed on the card.', placeholder:'29801011234567' },
-        { key:'nid_holder', label:'Full Name (as printed)', type:'text', required:true, placeholder:'Elon Ahmed Mostafa Space' },
-        { key:'nid_expiry', label:'ID Expiry Date', type:'date', required:true, isExpiry:true },
-        { key:'nid_address', label:'Address on ID', type:'text', required:false, full:true, placeholder:'12 El Nasr St., Nasr City, Cairo' }
+        { key:'national_id_number', label:'National ID Number', type:'text', required:true, pattern:'^\\d{14}$',
+          hint:'14 digits. Encodes century, date of birth, governorate and gender.', placeholder:'29801011234567', side:'Front', verifyAt:'Activation' },
+        { key:'full_name', label:'Full Name (as printed)', type:'text', required:true,
+          hint:'Arabic, exactly as printed. Must match Authorised Manager Name on the CR.', side:'Front', verifyAt:'Activation' },
+        { key:'date_of_birth', label:'Date of Birth', type:'date', required:true,
+          hint:'Derivable from ID digits 2–7. Cross-check against the typed value.', side:'Front', verifyAt:'Activation' },
+        { key:'gender', label:'Gender', type:'dropdown', required:true, options:GENDERS,
+          hint:'Derivable from digit 13 (odd = male, even = female).', side:'Back', verifyAt:'Activation' },
+        { key:'nationality', label:'Nationality', type:'dropdown', required:true, options:NATIONALITIES,
+          hint:'ISO country list, defaults to Egyptian.', side:'Back', verifyAt:'Activation' },
+        { key:'address_on_id', label:'Address on ID', type:'text', required:false, full:true,
+          placeholder:'12 El Nasr St., Nasr City, Cairo', side:'Front' },
+        { key:'id_expiry_date', label:'ID Expiry Date', type:'date', required:true, isExpiry:true,
+          hint:'Must not be in the past at activation.', side:'Back', verifyAt:'Activation' }
       ]
     },
     {
-      id: 'cr', name: 'Commercial Registration', nameAr: 'السجل التجاري',
-      sub: 'The legal existence of the business.',
+      id: 'passport', name: 'Passport', nameAr: 'جواز السفر',
+      sub: 'Applies to non-Egyptian owners and signatories. Alternative to National ID, not additional.',
+      icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a8.949 8.949 0 0 0 4.951-1.488A3.987 3.987 0 0 0 13 16h-2a3.987 3.987 0 0 0-3.951 3.512A8.949 8.949 0 0 0 12 21Zm3-11.25a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>',
+      fields: [
+        { key:'passport_number', label:'Passport Number', type:'text', required:true, pattern:'^[A-Za-z0-9]{6,12}$',
+          hint:'Alphanumeric, 6–12 characters. Format varies by country.', placeholder:'A12345678', verifyAt:'Activation' },
+        { key:'full_name', label:'Full Name (as printed)', type:'text', required:true,
+          hint:'Latin characters, as shown in the MRZ. Must match Authorised Manager Name on the CR.', verifyAt:'Activation' },
+        { key:'nationality', label:'Nationality', type:'dropdown', required:true, options:NATIONALITIES,
+          hint:'ISO country list.', verifyAt:'Activation' },
+        { key:'date_of_birth', label:'Date of Birth', type:'date', required:true, verifyAt:'Activation' },
+        { key:'gender', label:'Gender', type:'dropdown', required:true, options:GENDERS, verifyAt:'Activation' },
+        { key:'issuing_country', label:'Issuing Country', type:'dropdown', required:true, options:COUNTRIES,
+          hint:'ISO country list.', verifyAt:'Activation' },
+        { key:'issue_date', label:'Issue Date', type:'date', required:false },
+        { key:'passport_expiry_date', label:'Passport Expiry Date', type:'date', required:true, isExpiry:true,
+          hint:'Must not be in the past at activation.', verifyAt:'Activation' }
+      ]
+    },
+    {
+      id: 'cr', name: 'Commercial Register', nameAr: 'السجل التجاري',
+      sub: 'Applies to all registered companies.',
       icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>',
       fields: [
-        { key:'cr_number', label:'CR Number', type:'text', required:true, pattern:'^\\d{4,8}$', hint:'4–8 digits.', placeholder:'123456' },
-        { key:'cr_office', label:'Registration Office', type:'select', required:true, options:['Cairo','Giza','Alexandria','Sharqia','Dakahlia','Investment Authority','Other'] },
-        { key:'cr_legal_form', label:'Legal Form', type:'select', required:true, options:['Sole Proprietorship','Limited Liability Company (LLC)','Joint Stock Company (JSC)','Partnership','Branch of a Foreign Company'] },
-        { key:'cr_issue', label:'Issue Date', type:'date', required:true },
-        { key:'cr_expiry', label:'Expiry Date', type:'date', required:true, isExpiry:true },
-        { key:'cr_capital', label:'Issued Capital (EGP)', type:'number', required:false, placeholder:'250000' },
-        { key:'cr_activity', label:'Registered Activities', type:'text', required:true, full:true, placeholder:'Retail trade of consumer electronics; online sales' }
+        { key:'cr_number', label:'CR Number', type:'text', required:true, pattern:'^\\d{1,15}$',
+          hint:'Numeric, as printed on the register.', placeholder:'148237', verifyAt:'Activation' },
+        { key:'registered_company_name', label:'Registered Company Name', type:'text', required:true,
+          hint:'Arabic, exactly as printed. Must match Tax Card name and Bank Account Holder Name.', verifyAt:'Activation' },
+        { key:'legal_form', label:'Legal Form', type:'dropdown', required:true, options:LEGAL_FORMS,
+          hint:'Drives which KYC documents are required.', verifyAt:'Activation' },
+        { key:'registration_office', label:'Registration Office', type:'text', required:true,
+          hint:'Office that issued the register.', placeholder:'Cairo', verifyAt:'Activation' },
+        { key:'registered_activity', label:'Registered Activity', type:'text', required:true, full:true,
+          hint:'Must be consistent with the assigned business industry and MCC.',
+          placeholder:'Retail trade of consumer electronics; online sales', verifyAt:'Both' },
+        { key:'issue_date', label:'Issue Date', type:'date', required:false },
+        { key:'cr_expiry_date', label:'CR Expiry / Renewal Date', type:'date', required:true, isExpiry:true,
+          hint:'Must not be in the past at activation.', verifyAt:'Activation' },
+        { key:'authorised_manager_name', label:'Authorised Manager Name', type:'text', required:true,
+          hint:'Must match the National ID / Passport holder name.', verifyAt:'Activation' },
+        { key:'registered_address', label:'Registered Address', type:'text', required:false, full:true,
+          hint:'Required when enabling in-store / terminals.',
+          placeholder:'12 El Nasr St., Nasr City, Cairo', verifyAt:'Service' }
       ]
     },
     {
-      id: 'tax', name: 'Tax Identification Card', nameAr: 'البطاقة الضريبية',
-      sub: 'Tax registration details of the business.',
+      id: 'tax', name: 'Tax ID Card', nameAr: 'البطاقة الضريبية',
+      sub: 'Applies to all registered companies.',
       icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25 15 8.25m-5.25.75h.008v.008H9.75V9Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm4.5 4.5h.008v.008h-.008v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>',
       fields: [
-        { key:'tax_number', label:'Tax Registration Number', type:'text', required:true, pattern:'^\\d{3}-?\\d{3}-?\\d{3}$', hint:'9 digits, e.g. 123-456-789.', placeholder:'123-456-789' },
-        { key:'tax_office', label:'Tax Office', type:'text', required:true, placeholder:'Nasr City First' },
-        { key:'tax_activity', label:'Taxable Activity', type:'text', required:false, placeholder:'Retail trade' },
-        { key:'tax_issue', label:'Issue Date', type:'date', required:false }
+        { key:'tax_registration_number', label:'Tax Registration Number', type:'text', required:true,
+          pattern:'^\\d{3}-?\\d{3}-?\\d{3}$', hint:'9 digits, e.g. 123-456-789.', placeholder:'123-456-789', verifyAt:'Activation' },
+        { key:'registered_name', label:'Registered Name', type:'text', required:true,
+          hint:'As printed on the tax card. Must match CR Registered Company Name.', verifyAt:'Activation' },
+        { key:'tax_office', label:'Tax Office', type:'text', required:true, placeholder:'Nasr City First', verifyAt:'Activation' },
+        { key:'taxable_activity', label:'Taxable Activity', type:'text', required:false, placeholder:'Retail trade' },
+        { key:'issue_date', label:'Issue Date', type:'date', required:false }
       ]
     },
     {
@@ -525,6 +589,15 @@
       ]
     }
   ];
+
+  /* Field keys repeat across types — full_name, date_of_birth, gender, nationality and
+     issue_date all appear on more than one document. Namespace each field by its type so
+     the stored values and the DOM ids stay distinct, while `key` keeps the schema's name. */
+  DOC_TYPES.forEach(dt => dt.fields.forEach(f => {
+    f.uid = dt.id + '.' + f.key;
+    f.inputId = 'in_' + dt.id + '_' + f.key;
+    f.docType = dt;
+  }));
 
   /* ═══════════════════════════════════════════════════════════════
      2. Values stored on the account
@@ -567,11 +640,15 @@
   /* ═══════════════════════════════════════════════════════════════
      3. Field helpers
      ═══════════════════════════════════════════════════════════════ */
-  const valueOf = k => (legalData[k] && legalData[k].value) ? String(legalData[k].value).trim() : '';
+  /* Takes a field (namespaced) or a raw storage uid. */
+  const valueOf = f => {
+    const uid = typeof f === 'string' ? f : f.uid;
+    return (legalData[uid] && legalData[uid].value) ? String(legalData[uid].value).trim() : '';
+  };
 
   /* VAT number becomes required the moment the merchant is VAT-registered. */
   function isRequired(f) {
-    if (f.key === 'vat_number') return valueOf('vat_status') === 'Registered';
+    if (f.key === 'vat_number') return valueOf('vat.vat_status') === 'Registered';
     return !!f.required;
   }
 
@@ -585,7 +662,7 @@
 
   /* Returns: empty | invalid | expired | expiring | ok */
   function fieldState(f) {
-    const v = valueOf(f.key);
+    const v = valueOf(f);
     if (!v) return 'empty';
     if (f.pattern && !new RegExp(f.pattern).test(v.replace(/\s/g, ''))) return 'invalid';
     if (f.isExpiry) {
@@ -653,13 +730,13 @@
      6. Render — form for the selected type
      ═══════════════════════════════════════════════════════════════ */
   function fieldHTML(f) {
-    const v = valueOf(f.key);
+    const v = valueOf(f);
     const st = fieldState(f);
-    const stored = legalData[f.key];
-    const inputId = 'in_' + f.key;
+    const stored = legalData[f.uid];
+    const inputId = f.inputId;
 
     let control;
-    if (f.type === 'select') {
+    if (f.type === 'select' || f.type === 'dropdown') {
       const opts = ['<option value="">Select…</option>']
         .concat(f.options.map(o => '<option value="' + esc(o) + '"' + (o === v ? ' selected' : '') + '>' + esc(o) + '</option>'));
       control = '<select class="inp' + (st === 'invalid' ? ' err' : '') + '" id="' + inputId + '" data-key="' + f.key + '">' + opts.join('') + '</select>';
@@ -679,17 +756,23 @@
         (stored.source === 'ocr' ? 'OCR' : 'Manual') + '</span>' + esc(stored.by) + ' · ' + fmtStamp(stored.at) + '</div>'
       : '';
 
+    /* Side (Front / Back) comes straight from the schema. */
+    const tags = f.side ? '<span class="f-tag side">' + esc(f.side) + '</span>' : '';
+
     return '<div class="ld-field' + (f.full ? ' full' : '') + '">' +
-      '<label for="' + inputId + '">' + esc(f.label) +
-        (isRequired(f) ? ' <span class="req">*</span>' : ' <span class="opt">(Optional)</span>') + '</label>' +
+      '<label for="' + inputId + '">' +
+        '<span class="f-label">' + esc(f.label) +
+          (isRequired(f) ? ' <span class="req">*</span>' : ' <span class="opt">(Optional)</span>') + '</span>' +
+        (tags ? '<span class="f-tags">' + tags + '</span>' : '') +
+      '</label>' +
       control + note + meta +
     '</div>';
   }
 
   /* One card per added document */
   function cardHTML(dt) {
-    const filled = dt.fields.filter(f => valueOf(f.key)).length;
-    const stamps = dt.fields.map(f => legalData[f.key] && legalData[f.key].at).filter(Boolean);
+    const filled = dt.fields.filter(f => valueOf(f)).length;
+    const stamps = dt.fields.map(f => legalData[f.uid] && legalData[f.uid].at).filter(Boolean);
     const lastLine = stamps.length
       ? 'Last saved ' + fmtStamp(Math.max.apply(null, stamps)) + ' by ' + CURRENT_USER
       : 'Never saved';
@@ -780,10 +863,10 @@
     const changes = [];
 
     dt.fields.forEach(f => {
-      const el = $('in_' + f.key);
+      const el = $(f.inputId);
       if (!el) return;
       const v = el.value.trim();
-      const prev = valueOf(f.key);
+      const prev = valueOf(f);
       if (v === prev) return;
 
       if (v && f.pattern && !new RegExp(f.pattern).test(v.replace(/\s/g, ''))) nInvalid++;
@@ -795,9 +878,9 @@
         to:   v    ? (f.type === 'date' ? fmtDate(v)    : v)    : ''
       });
 
-      if (!v) { delete legalData[f.key]; nCleared++; }
+      if (!v) { delete legalData[f.uid]; nCleared++; }
       else {
-        legalData[f.key] = { value: v, by: CURRENT_USER, at: Date.now(), source: 'manual' };
+        legalData[f.uid] = { value: v, by: CURRENT_USER, at: Date.now(), source: 'manual' };
         if (prev) nEdited++; else nFilled++;
       }
     });
@@ -812,7 +895,10 @@
       parts.join(', ') + ' on <b>' + esc(dt.name) + '</b>', changes);
 
     persist();
-    renderAll();
+    /* Re-render only this card, so unsaved edits in other cards survive. */
+    rerenderCard(dt);
+    renderSectionBar();
+    renderEvents();
     toast(nInvalid
       ? 'Saved — ' + nInvalid + (nInvalid > 1 ? ' values still fail' : ' value still fails') + ' validation.'
       : dt.name + ' data saved to the account.');
@@ -823,7 +909,7 @@
   function resetDoc(dtId) {
     const dt = DOC_TYPES.find(d => d.id === dtId);
     if (!dt) return;
-    const saved = dt.fields.some(f => valueOf(f.key));
+    const saved = dt.fields.some(f => valueOf(f));
 
     if (!saved) {
       added = added.filter(id => id !== dtId);
@@ -833,10 +919,14 @@
       return;
     }
 
-    /* Re-render only this card, so unsaved edits in other cards survive. */
-    const card = document.querySelector('[data-doc="' + dtId + '"]');
-    if (card) card.outerHTML = cardHTML(dt);
+    rerenderCard(dt);
     toast('Unsaved changes discarded.');
+  }
+
+  /* Swap one card in place, leaving every other card's unsaved input untouched. */
+  function rerenderCard(dt) {
+    const card = document.querySelector('[data-doc="' + dt.id + '"]');
+    if (card) card.outerHTML = cardHTML(dt);
   }
 
   /* ═══════════════════════════════════════════════════════════════

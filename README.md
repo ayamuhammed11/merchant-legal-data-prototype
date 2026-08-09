@@ -16,7 +16,8 @@ It lives as a **Legal Data** sub-tab beside **All documents** on a merchant acco
 
 - **One card per document type** — independent header, field grid and save/cancel footer. Saving one card never touches another.
 - **Fields come from the type definition**, so the form grows as new types are defined rather than being hardcoded per screen.
-- **Validation** — per-field format rules (National ID = 14 digits, CR = 4–8 digits, Tax = 9 digits, IBAN = `EG` + 27 digits) plus expiry-date handling (expired / expiring within 60 days).
+- **Validation** — per-field format rules (National ID = 14 digits, Passport = alphanumeric 6–12, CR = numeric, Tax = 9 digits, IBAN = `EG` + 27 digits) plus expiry-date handling (expired / expiring within 60 days).
+- **Namespaced field keys** — several keys (`full_name`, `date_of_birth`, `gender`, `nationality`, `issue_date`) appear on more than one document type, so values are stored as `<type>.<key>` to keep them independent.
 - **Conditional requirements** — VAT Registration Number only becomes required once VAT Status is set to *Registered*.
 - **Cancel vs. discard** — on a card that was never saved the footer button reads **Cancel** and removes the card entirely; once it holds saved data it reads **Discard changes** and reverts the fields to their last saved values.
 - **Provenance** — every value records who entered it and when, shown under the field. The source is tagged `Manual`, leaving room for an OCR pass to populate the same fields later without changing the screen.
