@@ -1,14 +1,14 @@
-# Merchant Legal Data — UI prototype
+# Merchant Document Info — UI prototype
 
-A single-file HTML prototype for recording a merchant's legal document data as text, typed in manually by a back-office agent.
+A single-file HTML prototype for recording a merchant's document information as text, typed in manually by a back-office agent.
 
-**[Open the prototype](https://ayamuhammed11.github.io/merchant-legal-data-prototype/)** (once GitHub Pages is enabled)
+**[Open the prototype](https://ayamuhammed11.github.io/merchant-legal-data-prototype/)**
 
 ## What it does
 
-It lives as a **Legal Data** sub-tab beside **All documents** on a merchant account. The page starts empty.
+It lives as a **Document Info** sub-tab beside **All documents** on a merchant account. The page starts empty.
 
-1. The agent clicks **Add document data** and picks a document type from a plain list of names.
+1. The agent clicks **Add document info** and picks a document type from a plain list of names.
 2. That type gets its own card with the fields defined for it.
 3. The agent types the values as text and saves. Everything stays editable afterwards.
 

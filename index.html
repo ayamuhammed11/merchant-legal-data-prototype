@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kashier | Merchant — Legal Data</title>
+<title>Kashier | Merchant — Document Info</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -388,14 +388,14 @@
         </button>
         <button class="subtab active" id="stData">
           <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9"/></svg>
-          Legal Data
+          Document Info
         </button>
       </div>
 
       <div class="alert info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
         <div class="a-body">
-          Add a document type, then type its data as text. Values are saved on the account and can be edited at any time.
+          Add a document type, then type its information as text. Values are saved on the account and can be edited at any time.
           The fields shown come from that type's definition in <a href="document-types.html" style="color:var(--link);font-weight:600;">Document Types</a>.
         </div>
       </div>
@@ -403,12 +403,12 @@
       <!-- The single Add entry point -->
       <div class="section-bar">
         <div>
-          <span class="sb-title">Document data</span>
+          <span class="sb-title">Document Info</span>
           <span class="sb-count" id="sbCount"></span>
         </div>
         <button class="btn btn-primary" id="btnAdd" type="button">
           <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-          Add document data
+          Add document info
         </button>
       </div>
 
@@ -421,12 +421,12 @@
           <svg class="hi ch-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"/></svg>
           <div class="ch-grow">
             <h2>Events</h2>
-            <p class="ch-sub">Full audit trail of this merchant's legal data — every document type added or removed, and every value filled, edited or cleared, with the old and new value, who did it and when.</p>
+            <p class="ch-sub">Full audit trail of this merchant's document info — every document type added or removed, and every value filled, edited or cleared, with the old and new value, who did it and when.</p>
           </div>
         </div>
         <div class="card-body">
           <div id="eventsList"></div>
-          <div class="events-empty" id="eventsEmpty">No events recorded yet — actions on this merchant's legal data will appear here.</div>
+          <div class="events-empty" id="eventsEmpty">No events recorded yet — actions on this merchant's document info will appear here.</div>
         </div>
       </div>
     </div>
@@ -437,7 +437,7 @@
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="addTitle">
       <div class="modal-head">
         <div>
-          <h2 id="addTitle">Add document data</h2>
+          <h2 id="addTitle">Add document info</h2>
           <p class="m-sub">Choose the document type whose data you want to enter.</p>
         </div>
         <button class="modal-close" id="addClose" aria-label="Close"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>
@@ -624,8 +624,8 @@
   function addType(id) {
     if (added.indexOf(id) === -1) {
       added.push(id);
-      addEvent('created', id, 'added the <b>' + esc(DOC_TYPES.find(d => d.id === id).name) + '</b> data section');
-      toast(DOC_TYPES.find(d => d.id === id).name + ' added — enter its data below.');
+      addEvent('created', id, 'added the <b>' + esc(DOC_TYPES.find(d => d.id === id).name) + '</b> info section');
+      toast(DOC_TYPES.find(d => d.id === id).name + ' added — enter its info below.');
     }
     renderAll();
     const card = document.querySelector('[data-doc="' + id + '"]');
@@ -706,7 +706,7 @@
       ? added.length + ' of ' + total + ' document types recorded'
       : '';
     $('btnAdd').disabled = remaining === 0;
-    $('btnAdd').lastChild.textContent = remaining === 0 ? ' All document types added' : ' Add document data';
+    $('btnAdd').lastChild.textContent = remaining === 0 ? ' All document types added' : ' Add document info';
   }
 
   /* ── Chooser: the documents already uploaded on this account ── */
@@ -841,8 +841,8 @@
       $('cardsHost').innerHTML =
         '<div class="empty-card">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>' +
-          '<div class="t">No document data yet</div>' +
-          '<div class="s">Use <b>Add document data</b> above to pick a document type, then type its values as text. Each one gets its own card here.</div>' +
+          '<div class="t">No document info yet</div>' +
+          '<div class="s">Use <b>Add document info</b> above to pick a document type, then type its values as text. Each one gets its own card here.</div>' +
         '</div>';
       return;
     }
@@ -901,7 +901,7 @@
     renderEvents();
     toast(nInvalid
       ? 'Saved — ' + nInvalid + (nInvalid > 1 ? ' values still fail' : ' value still fails') + ' validation.'
-      : dt.name + ' data saved to the account.');
+      : dt.name + ' info saved to the account.');
   }
 
   /* Discard: revert this card to its saved values.
@@ -913,7 +913,7 @@
 
     if (!saved) {
       added = added.filter(id => id !== dtId);
-      addEvent('deleted', dtId, 'cancelled the <b>' + esc(dt.name) + '</b> data section before saving any value');
+      addEvent('deleted', dtId, 'cancelled the <b>' + esc(dt.name) + '</b> info section before saving any value');
       renderAll();
       toast(dt.name + ' cancelled.');
       return;
