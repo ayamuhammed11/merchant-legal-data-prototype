@@ -192,6 +192,8 @@
   .acc-head .a-dot.err  { background: var(--destructive); box-shadow: 0 0 0 3px var(--destructive-bg); }
 
   .acc-body { border-top: 1px solid var(--border-subtle); }
+  .foot-note { font-size: 12px; color: var(--cadet-05); }
+  .foot-note.blocked { color: var(--destructive); font-weight: 600; }
 
   /* Empty state when nothing has been added yet */
   .empty-card { border: 1px dashed var(--border); border-radius: 8px; background: #FCFCFD;
@@ -546,17 +548,6 @@
       ]
     },
     {
-      id: 'bank', name: 'Bank Account Letter / IBAN proof', nameAr: 'خطاب الحساب البنكي',
-      sub: 'Where the merchant is paid out.',
-      icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"/>',
-      fields: [
-        { key:'bank_name', label:'Bank', type:'select', required:true, options:['Bank Misr','National Bank of Egypt','QNB Alahli','CIB','Banque du Caire','HSBC Egypt','Other'] },
-        { key:'bank_holder', label:'Account Holder Name', type:'text', required:true, hint:'Must match the legal company name on the CR.', placeholder:'Space X for Trading LLC' },
-        { key:'bank_iban', label:'IBAN', type:'text', required:true, pattern:'^EG\\d{27}$', hint:'EG followed by 27 digits.', placeholder:'EG380019000500000000263180002' },
-        { key:'bank_swift', label:'SWIFT / BIC', type:'text', required:false, placeholder:'BMISEGCX' }
-      ]
-    },
-    {
       id: 'utility', name: 'Utility Bill', nameAr: 'فاتورة مرافق',
       sub: 'Proof of the business address.',
       icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>',
@@ -580,7 +571,6 @@
     { id:'d2', type:'nid',     name:'National ID (Back)',    version:'V1' },
     { id:'d3', type:'cr',      name:'Commercial Register',   version:'V2' },
     { id:'d4', type:'tax',     name:'Tax ID Card',           version:'V1' },
-    { id:'d5', type:'bank',    name:'Bank Account Letter',   version:'V1' },
     { id:'d6', type:'utility', name:'Utility Bill',          version:'V1' }
   ];
 
@@ -631,6 +621,7 @@
 
     openId = id;
     renderCards();
+    revalidate();   /* set the Save state from whatever is already stored */
     const card = document.querySelector('[data-doc="' + id + '"]');
     if (card) {
       card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -663,9 +654,8 @@
     return Math.round((d - today) / 864e5);
   }
 
-  /* Returns: empty | invalid | expired | expiring | ok */
-  function fieldState(f) {
-    const v = valueOf(f);
+  /* Returns: empty | invalid | expired | expiring | ok — for any value, typed or stored. */
+  function stateFor(f, v) {
     if (!v) return 'empty';
     if (f.pattern && !new RegExp(f.pattern).test(v.replace(/\s/g, ''))) return 'invalid';
     if (f.isExpiry) {
@@ -674,6 +664,20 @@
       if (d !== null && d <= 60) return 'expiring';
     }
     return 'ok';
+  }
+  const fieldState = f => stateFor(f, valueOf(f));
+
+  /* Only a malformed value blocks saving. An expired date is a true fact about the
+     document, so it is flagged but still recordable. */
+  const blocksSave = st => st === 'invalid';
+
+  /* The message under a field, for whatever value it currently holds. */
+  function noteInfo(f, v) {
+    const st = stateFor(f, v);
+    if (st === 'invalid')  return { cls: 'f-note error', text: 'Value does not match the expected format' + (f.hint ? ' — ' + f.hint : '.') };
+    if (st === 'expired')  return { cls: 'f-note warn',  text: 'Expired on ' + fmtDate(v) + ' — a renewed document is needed.' };
+    if (st === 'expiring') return { cls: 'f-note warn',  text: 'Expires in ' + daysUntil(v) + ' days (' + fmtDate(v) + ').' };
+    return { cls: 'f-note', text: f.hint || '' };
   }
 
   function fmtDate(iso) {
@@ -730,10 +734,9 @@
         '" type="' + type + '" value="' + esc(v) + '" placeholder="' + esc(f.placeholder || '') + '">';
     }
 
-    let note = f.hint ? '<div class="f-note">' + esc(f.hint) + '</div>' : '';
-    if (st === 'invalid') note = '<div class="f-note error">Value does not match the expected format' + (f.hint ? ' — ' + esc(f.hint) : '.') + '</div>';
-    else if (st === 'expired') note = '<div class="f-note error">Expired on ' + fmtDate(v) + ' — a renewed document is needed.</div>';
-    else if (st === 'expiring') note = '<div class="f-note warn">Expires in ' + daysUntil(v) + ' days (' + fmtDate(v) + ').</div>';
+    /* Always render the note element so live validation has something to write into. */
+    const ni = noteInfo(f, v);
+    const note = '<div class="' + ni.cls + '" id="note_' + f.inputId + '">' + esc(ni.text) + '</div>';
 
     const meta = stored
       ? '<div class="f-meta"><span class="src-chip' + (stored.source === 'ocr' ? ' ocr' : '') + '">' +
@@ -796,7 +799,7 @@
             '<div class="ld-grid">' + dt.fields.map(fieldHTML).join('') + '</div>' +
           '</div>' +
           '<div class="card-foot">' +
-            '<span style="font-size:12px;color:var(--cadet-05);">Collapsing this card discards anything not saved.</span>' +
+            '<span class="foot-note" id="footNote_' + dt.id + '">Collapsing this card discards anything not saved.</span>' +
             '<div style="display:flex;gap:8px;">' +
               '<button class="btn btn-ghost btn-sm" data-cancel="' + dt.id + '">Cancel</button>' +
               '<button class="btn btn-primary btn-sm" data-save="' + dt.id + '">Save</button>' +
@@ -807,6 +810,49 @@
 
     return '<div class="acc' + (isOpen ? ' open' : '') + '" data-doc="' + dt.id + '">' +
       head + body + '</div>';
+  }
+
+  /* ── Live validation ──
+     Re-checks the open card against what is currently typed, updates each field's
+     note, and blocks Save while any entered value is malformed. */
+  function revalidate() {
+    const card = document.querySelector('.acc.open');
+    if (!card) return;
+    const dt = DOC_TYPES.find(d => d.id === card.getAttribute('data-doc'));
+    if (!dt) return;
+
+    let bad = 0;
+    dt.fields.forEach(f => {
+      const el = $(f.inputId);
+      if (!el) return;
+      const v = el.value.trim();
+      const st = stateFor(f, v);
+      if (blocksSave(st)) bad++;
+      el.classList.toggle('err', blocksSave(st));
+
+      const noteEl = $('note_' + f.inputId);
+      if (noteEl) {
+        const ni = noteInfo(f, v);
+        noteEl.className = ni.cls;
+        noteEl.textContent = ni.text;
+      }
+    });
+
+    const saveBtn = card.querySelector('[data-save]');
+    if (saveBtn) saveBtn.disabled = bad > 0;
+
+    const foot = $('footNote_' + dt.id);
+    if (foot) {
+      if (bad) {
+        foot.textContent = bad + (bad > 1 ? ' values are' : ' value is') + ' not in the expected format — fix ' +
+          (bad > 1 ? 'them' : 'it') + ' to save.';
+        foot.classList.add('blocked');
+      } else {
+        foot.textContent = 'Collapsing this card discards anything not saved.';
+        foot.classList.remove('blocked');
+      }
+    }
+    return bad;
   }
 
   /* ── Events ── */
@@ -862,8 +908,25 @@
      ═══════════════════════════════════════════════════════════════ */
   function saveDoc(dtId) {
     const dt = DOC_TYPES.find(d => d.id === dtId);
+
+    /* Nothing is written while any entered value is malformed. Re-checked here as
+       well as live, so the guard holds however Save was reached. */
+    const bad = dt.fields.filter(f => {
+      const el = $(f.inputId);
+      return el && blocksSave(stateFor(f, el.value.trim()));
+    });
+    if (bad.length) {
+      revalidate();
+      const first = $(bad[0].inputId);
+      if (first) { first.scrollIntoView({ behavior:'smooth', block:'center' }); first.focus({ preventScroll: true }); }
+      toast(bad.length > 1
+        ? bad.length + ' values are not in the expected format — nothing was saved.'
+        : bad[0].label + ' is not in the expected format — nothing was saved.');
+      return;
+    }
+
     /* Counters, named apart from the field values they describe. */
-    let nFilled = 0, nEdited = 0, nCleared = 0, nInvalid = 0;
+    let nFilled = 0, nEdited = 0, nCleared = 0;
     const changes = [];
 
     dt.fields.forEach(f => {
@@ -872,8 +935,6 @@
       const v = el.value.trim();
       const prev = valueOf(f);
       if (v === prev) return;
-
-      if (v && f.pattern && !new RegExp(f.pattern).test(v.replace(/\s/g, ''))) nInvalid++;
 
       /* Record the before/after for the audit trail, formatted the way the field displays. */
       changes.push({
@@ -901,9 +962,7 @@
     persist();
     openId = null;           /* saving closes the card and returns to the queue */
     renderAll();
-    toast(nInvalid
-      ? 'Saved — ' + nInvalid + (nInvalid > 1 ? ' values still fail' : ' value still fails') + ' validation.'
-      : dt.name + ' info saved.');
+    toast(dt.name + ' info saved.');
   }
 
   /* Cancel is the same as collapsing: nothing is written, so re-rendering from
@@ -924,9 +983,13 @@
     if (save) { saveDoc(save.getAttribute('data-save')); return; }
     const cancel = e.target.closest('[data-cancel]');
     if (cancel) { cancelCard(); return; }
-    const head = e.target.closest('[data-toggle]');
-    if (head) { toggleCard(head.getAttribute('data-toggle')); return; }
+    const headEl = e.target.closest('[data-toggle]');
+    if (headEl) { toggleCard(headEl.getAttribute('data-toggle')); return; }
   });
+
+  /* Validate as the agent types, so Save is never a surprise. */
+  document.addEventListener('input', e => { if (e.target.closest('.acc-body')) revalidate(); });
+  document.addEventListener('change', e => { if (e.target.closest('.acc-body')) revalidate(); });
 
 
   $('stFiles').addEventListener('click', () => { window.location.href = 'documents-upload.html'; });

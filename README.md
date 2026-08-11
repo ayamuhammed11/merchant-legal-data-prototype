@@ -19,7 +19,8 @@ It lives as a **Document Info** sub-tab beside **All documents** on a merchant a
 - **Collapsing is Cancel** — anything typed and not saved is dropped rather than kept silently. Saving is always explicit.
 - **Status at a glance** — a dot per row: grey untouched, amber partially filled, red a value that fails validation or has expired, green complete. The header counts how many uploaded documents are fully recorded.
 - **Fields come from the type definition**, so the form grows as new types are defined rather than being hardcoded per screen.
-- **Validation** — per-field format rules (National ID = 14 digits, Passport = alphanumeric 6–12, CR = numeric, Tax = 9 digits, IBAN = `EG` + 27 digits) plus expiry-date handling (expired / expiring within 60 days).
+- **Validation** — per-field format rules (National ID = 14 digits, Passport = alphanumeric 6–12, CR = numeric, Tax = 9 digits) plus expiry-date handling (expired / expiring within 60 days).
+- **Save is blocked while any entered value is malformed** — the field, its note and the card footer all flag it live as the agent types, and the guard is re-checked on Save itself so nothing malformed is ever written. An expired date does not block saving — it is a true fact about the document, just flagged.
 - **Namespaced field keys** — several keys (`full_name`, `date_of_birth`, `gender`, `nationality`, `issue_date`) appear on more than one document type, so values are stored as `<type>.<key>` to keep them independent.
 - **Conditional requirements** — VAT Registration Number only becomes required once VAT Status is set to *Registered*.
 - **Provenance** — every value records who entered it and when, shown under the field. The source is tagged `Manual`, leaving room for an OCR pass to populate the same fields later without changing the screen.
