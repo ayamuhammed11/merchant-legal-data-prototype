@@ -167,6 +167,14 @@
     color: var(--cadet-04); margin-left: 10px; }
   .btn:disabled { opacity: .45; cursor: not-allowed; }
 
+  /* Prototype-only control — lets this demo toggle between an account with uploads
+     and one with none, so both states can be shown without a second file. */
+  .sim-toggle { display: inline-flex; align-items: center; gap: 6px; border: 1px dashed var(--border);
+    background: #fff; border-radius: var(--radius); padding: 8px 14px; font-size: 12.5px; font-weight: 600;
+    color: var(--cadet-base); cursor: pointer; white-space: nowrap; }
+  .sim-toggle:hover { border-color: var(--primary); color: var(--primary); background: var(--ocean-10); }
+  .sim-toggle.on { border-color: var(--primary); color: var(--primary); background: var(--ocean-10); border-style: solid; }
+
   /* ---------- Accordion card, one per uploaded document ---------- */
   .acc { background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
   .acc.open { border-color: var(--ocean-20); box-shadow: 0 1px 3px rgba(16,24,40,.06); }
@@ -236,10 +244,6 @@
   .f-note { font-size: 11.5px; color: var(--cadet-05); margin-top: 6px; line-height: 1.4; }
   .f-note.error { color: var(--destructive); font-weight: 600; }
   .f-note.warn { color: #92620A; font-weight: 600; }
-  .f-meta { font-size: 11px; color: var(--cadet-06); margin-top: 6px; display: flex; align-items: center; gap: 6px; }
-  .src-chip { font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
-    background: var(--pill-bg); color: var(--pill-text); border-radius: 3px; padding: 2px 5px; }
-  .src-chip.ocr { background: var(--accent-10); color: #006A66; }
 
   /* ---------- Events feed ---------- */
   .event-item { display: flex; align-items: flex-start; gap: 16px; padding: 18px 4px;
@@ -406,6 +410,7 @@
           <span class="sb-title">Document Info</span>
           <span class="sb-count" id="sbCount"></span>
         </div>
+        <button class="sim-toggle" id="btnSimulate" type="button">▶ Simulate: no documents uploaded</button>
       </div>
 
       <div id="cardsHost"></div>
@@ -566,7 +571,7 @@
          The cards on this tab are derived from these — there is no
          "add" step, because what exists is decided by the uploads.
      ═══════════════════════════════════════════════════════════════ */
-  const ACCOUNT_DOCS = [
+  const SEED_ACCOUNT_DOCS = [
     { id:'d1', type:'nid',     name:'National ID (Front)',   version:'V1' },
     { id:'d2', type:'nid',     name:'National ID (Back)',    version:'V1' },
     { id:'d3', type:'cr',      name:'Commercial Register',   version:'V2' },
@@ -574,7 +579,12 @@
     { id:'d6', type:'utility', name:'Utility Bill',          version:'V1' }
   ];
 
-  const docsForType = id => ACCOUNT_DOCS.filter(d => d.type === id);
+  /* Prototype-only: lets this demo show what the tab looks like on an account
+     with nothing uploaded yet, without needing a second HTML file. Not persisted —
+     always starts from the seeded uploads on load. */
+  let simulateNoUploads = false;
+
+  const docsForType = id => simulateNoUploads ? [] : SEED_ACCOUNT_DOCS.filter(d => d.type === id);
   /* One card per uploaded document type, in the order the types are defined. */
   const recordableTypes = () => DOC_TYPES.filter(dt => docsForType(dt.id).length);
 
@@ -613,6 +623,12 @@
      silently. Saving writes the values and closes the card. */
   let openId = null;
 
+  /* Required-but-empty fields only turn red once the agent has actually reached them —
+     by leaving them blank on the way past, or by trying to save with them still empty.
+     Without this a freshly opened card would show every required field as an error. */
+  let touched = new Set();
+  let attemptedSave = false;
+
   function toggleCard(id) {
     const dt = DOC_TYPES.find(d => d.id === id);
     if (!dt) return;
@@ -620,6 +636,8 @@
     if (openId === id) { openId = null; renderCards(); return; }
 
     openId = id;
+    touched = new Set();
+    attemptedSave = false;
     renderCards();
     revalidate();   /* set the Save state from whatever is already stored */
     const card = document.querySelector('[data-doc="' + id + '"]');
@@ -640,9 +658,15 @@
     return (legalData[uid] && legalData[uid].value) ? String(legalData[uid].value).trim() : '';
   };
 
-  /* VAT number becomes required the moment the merchant is VAT-registered. */
-  function isRequired(f) {
-    if (f.key === 'vat_number') return valueOf('vat.vat_status') === 'Registered';
+  /* VAT number becomes required the moment the merchant is VAT-registered.
+     `live` is an optional uid -> current-input-value map from the open card, so this
+     reacts to what is being typed right now rather than only the last saved value. */
+  function isRequired(f, live) {
+    if (f.key === 'vat_number') {
+      const v = (live && Object.prototype.hasOwnProperty.call(live, 'vat.vat_status'))
+        ? live['vat.vat_status'] : valueOf('vat.vat_status');
+      return v === 'Registered';
+    }
     return !!f.required;
   }
 
@@ -667,14 +691,18 @@
   }
   const fieldState = f => stateFor(f, valueOf(f));
 
-  /* Only a malformed value blocks saving. An expired date is a true fact about the
-     document, so it is flagged but still recordable. */
+  /* A malformed value always blocks saving. A required field left empty blocks it too —
+     checked separately, since "empty" alone isn't wrong until you try to save the card.
+     An expired date does not block: it is a true fact about the document, just flagged. */
   const blocksSave = st => st === 'invalid';
 
-  /* The message under a field, for whatever value it currently holds. */
-  function noteInfo(f, v) {
+  /* The message under a field, for whatever value it currently holds.
+     `flagMissing` renders the "required" reminder — only passed once the agent has
+     actually reached that field (touched it, or tried to save with it empty). */
+  function noteInfo(f, v, flagMissing) {
     const st = stateFor(f, v);
     if (st === 'invalid')  return { cls: 'f-note error', text: 'Value does not match the expected format' + (f.hint ? ' — ' + f.hint : '.') };
+    if (st === 'empty' && flagMissing) return { cls: 'f-note error', text: 'This field is required.' };
     if (st === 'expired')  return { cls: 'f-note warn',  text: 'Expired on ' + fmtDate(v) + ' — a renewed document is needed.' };
     if (st === 'expiring') return { cls: 'f-note warn',  text: 'Expires in ' + daysUntil(v) + ' days (' + fmtDate(v) + ').' };
     return { cls: 'f-note', text: f.hint || '' };
@@ -720,7 +748,6 @@
   function fieldHTML(f) {
     const v = valueOf(f);
     const st = fieldState(f);
-    const stored = legalData[f.uid];
     const inputId = f.inputId;
 
     let control;
@@ -738,21 +765,21 @@
     const ni = noteInfo(f, v);
     const note = '<div class="' + ni.cls + '" id="note_' + f.inputId + '">' + esc(ni.text) + '</div>';
 
-    const meta = stored
-      ? '<div class="f-meta"><span class="src-chip' + (stored.source === 'ocr' ? ' ocr' : '') + '">' +
-        (stored.source === 'ocr' ? 'OCR' : 'Manual') + '</span>' + esc(stored.by) + ' · ' + fmtStamp(stored.at) + '</div>'
-      : '';
-
     /* Side (Front / Back) comes straight from the schema. */
     const tags = f.side ? '<span class="f-tag side">' + esc(f.side) + '</span>' : '';
 
+    /* Rendered once here from the stored state; revalidate() keeps it in sync with
+       whatever is currently typed, since VAT Registration Number's requiredness
+       depends on a sibling field in the same card. */
+    const reqOpt = '<span class="req-opt" id="reqopt_' + inputId + '">' +
+      (isRequired(f) ? '<span class="req">*</span>' : '<span class="opt">(Optional)</span>') + '</span>';
+
     return '<div class="ld-field' + (f.full ? ' full' : '') + '">' +
       '<label for="' + inputId + '">' +
-        '<span class="f-label">' + esc(f.label) +
-          (isRequired(f) ? ' <span class="req">*</span>' : ' <span class="opt">(Optional)</span>') + '</span>' +
+        '<span class="f-label">' + esc(f.label) + ' ' + reqOpt + '</span>' +
         (tags ? '<span class="f-tags">' + tags + '</span>' : '') +
       '</label>' +
-      control + note + meta +
+      control + note +
     '</div>';
   }
 
@@ -812,47 +839,88 @@
       head + body + '</div>';
   }
 
+  /* Reads what is currently typed into the open card, keyed by uid — used so a field's
+     requiredness (VAT Registration Number) can react to a sibling field's live value. */
+  function liveValues(dt) {
+    const live = {};
+    dt.fields.forEach(f => {
+      const el = $(f.inputId);
+      live[f.uid] = el ? el.value.trim() : valueOf(f);
+    });
+    return live;
+  }
+
+  /* A card can be saved only once nothing entered is malformed and every required
+     field holds a value. Returns the two blocking sets so callers can report why. */
+  function evaluateCard(dt, live) {
+    const badFields = [];
+    const missingFields = [];
+    dt.fields.forEach(f => {
+      const v = live[f.uid];
+      const st = stateFor(f, v);
+      if (blocksSave(st)) badFields.push(f);
+      else if (isRequired(f, live) && st === 'empty') missingFields.push(f);
+    });
+    return { badFields, missingFields };
+  }
+
   /* ── Live validation ──
-     Re-checks the open card against what is currently typed, updates each field's
-     note, and blocks Save while any entered value is malformed. */
+     Re-checks the open card against what is currently typed: updates each field's
+     required/optional badge and note, and blocks Save until every value is well-formed
+     and every required field is filled. */
   function revalidate() {
     const card = document.querySelector('.acc.open');
     if (!card) return;
     const dt = DOC_TYPES.find(d => d.id === card.getAttribute('data-doc'));
     if (!dt) return;
 
-    let bad = 0;
+    const live = liveValues(dt);
+    const { badFields, missingFields } = evaluateCard(dt, live);
+    const badSet = new Set(badFields.map(f => f.uid));
+    const missingSet = new Set(missingFields.map(f => f.uid));
+
     dt.fields.forEach(f => {
       const el = $(f.inputId);
       if (!el) return;
-      const v = el.value.trim();
-      const st = stateFor(f, v);
-      if (blocksSave(st)) bad++;
-      el.classList.toggle('err', blocksSave(st));
+      const v = live[f.uid];
+      const isBad = badSet.has(f.uid);
+      const isMissing = missingSet.has(f.uid);
+      const showMissing = isMissing && (attemptedSave || touched.has(f.inputId));
+
+      el.classList.toggle('err', isBad || showMissing);
 
       const noteEl = $('note_' + f.inputId);
       if (noteEl) {
-        const ni = noteInfo(f, v);
+        const ni = noteInfo(f, v, showMissing);
         noteEl.className = ni.cls;
         noteEl.textContent = ni.text;
       }
+
+      const reqEl = $('reqopt_' + f.inputId);
+      if (reqEl) {
+        reqEl.innerHTML = isRequired(f, live)
+          ? '<span class="req">*</span>' : '<span class="opt">(Optional)</span>';
+      }
     });
 
+    const bad = badFields.length, missing = missingFields.length;
     const saveBtn = card.querySelector('[data-save]');
-    if (saveBtn) saveBtn.disabled = bad > 0;
+    if (saveBtn) saveBtn.disabled = bad > 0 || missing > 0;
 
     const foot = $('footNote_' + dt.id);
     if (foot) {
-      if (bad) {
-        foot.textContent = bad + (bad > 1 ? ' values are' : ' value is') + ' not in the expected format — fix ' +
-          (bad > 1 ? 'them' : 'it') + ' to save.';
+      if (bad || missing) {
+        const parts = [];
+        if (bad)     parts.push(bad     + (bad     > 1 ? ' values not in the expected format'  : ' value not in the expected format'));
+        if (missing) parts.push(missing + (missing > 1 ? ' required fields left empty'         : ' required field left empty'));
+        foot.textContent = parts.join(' and ') + ' — fix ' + (bad + missing > 1 ? 'these' : 'this') + ' to save.';
         foot.classList.add('blocked');
       } else {
         foot.textContent = 'Collapsing this card discards anything not saved.';
         foot.classList.remove('blocked');
       }
     }
-    return bad;
+    return bad + missing;
   }
 
   /* ── Events ── */
@@ -909,19 +977,34 @@
   function saveDoc(dtId) {
     const dt = DOC_TYPES.find(d => d.id === dtId);
 
-    /* Nothing is written while any entered value is malformed. Re-checked here as
-       well as live, so the guard holds however Save was reached. */
-    const bad = dt.fields.filter(f => {
-      const el = $(f.inputId);
-      return el && blocksSave(stateFor(f, el.value.trim()));
-    });
-    if (bad.length) {
+    /* Nothing is written unless every value is well-formed and every required field
+       is filled. Re-checked here as well as live, so the guard holds however Save
+       was reached. */
+    const live = liveValues(dt);
+    const { badFields, missingFields } = evaluateCard(dt, live);
+
+    if (badFields.length || missingFields.length) {
+      attemptedSave = true;
       revalidate();
-      const first = $(bad[0].inputId);
+      const firstBlocking = dt.fields.find(f => badFields.includes(f) || missingFields.includes(f));
+      const first = firstBlocking && $(firstBlocking.inputId);
       if (first) { first.scrollIntoView({ behavior:'smooth', block:'center' }); first.focus({ preventScroll: true }); }
-      toast(bad.length > 1
-        ? bad.length + ' values are not in the expected format — nothing was saved.'
-        : bad[0].label + ' is not in the expected format — nothing was saved.');
+
+      let msg;
+      if (badFields.length && missingFields.length) {
+        msg = badFields.length + (badFields.length > 1 ? ' values are not in the expected format' : ' value is not in the expected format') +
+          ' and ' + missingFields.length + (missingFields.length > 1 ? ' required fields are' : ' required field is') +
+          ' empty — nothing was saved.';
+      } else if (badFields.length) {
+        msg = badFields.length > 1
+          ? badFields.length + ' values are not in the expected format — nothing was saved.'
+          : badFields[0].label + ' is not in the expected format — nothing was saved.';
+      } else {
+        msg = missingFields.length > 1
+          ? missingFields.length + ' required fields are still empty — nothing was saved.'
+          : missingFields[0].label + ' is required — nothing was saved.';
+      }
+      toast(msg);
       return;
     }
 
@@ -961,6 +1044,8 @@
 
     persist();
     openId = null;           /* saving closes the card and returns to the queue */
+    touched = new Set();
+    attemptedSave = false;
     renderAll();
     toast(dt.name + ' info saved.');
   }
@@ -969,16 +1054,37 @@
      what is stored drops whatever was typed. */
   function cancelCard() {
     openId = null;
+    touched = new Set();
+    attemptedSave = false;
     renderCards();
     toast('Unsaved changes discarded.');
+  }
+
+  /* Flip between the seeded uploads and an account with nothing uploaded. */
+  function toggleSimulation() {
+    simulateNoUploads = !simulateNoUploads;
+    openId = null;
+    touched = new Set();
+    attemptedSave = false;
+    renderAll();
+    toast(simulateNoUploads
+      ? 'Simulating an account with no documents uploaded.'
+      : 'Restored the uploaded documents.');
+  }
+  function renderSimToggle() {
+    const b = $('btnSimulate');
+    if (!b) return;
+    b.textContent = simulateNoUploads ? '◀ Restore uploaded documents' : '▶ Simulate: no documents uploaded';
+    b.classList.toggle('on', simulateNoUploads);
   }
 
   /* ═══════════════════════════════════════════════════════════════
      8. Wiring
      ═══════════════════════════════════════════════════════════════ */
-  function renderAll() { renderSectionBar(); renderCards(); renderEvents(); }
+  function renderAll() { renderSectionBar(); renderCards(); renderEvents(); renderSimToggle(); }
 
   document.addEventListener('click', e => {
+    if (e.target.closest('#btnSimulate')) { toggleSimulation(); return; }
     const save = e.target.closest('[data-save]');
     if (save) { saveDoc(save.getAttribute('data-save')); return; }
     const cancel = e.target.closest('[data-cancel]');
@@ -990,6 +1096,14 @@
   /* Validate as the agent types, so Save is never a surprise. */
   document.addEventListener('input', e => { if (e.target.closest('.acc-body')) revalidate(); });
   document.addEventListener('change', e => { if (e.target.closest('.acc-body')) revalidate(); });
+  /* A required field only turns red once the agent has actually left it empty,
+     not the instant the card opens. 'focusout' bubbles, unlike 'blur'. */
+  document.addEventListener('focusout', e => {
+    if (e.target.classList && e.target.classList.contains('inp') && e.target.closest('.acc-body')) {
+      touched.add(e.target.id);
+      revalidate();
+    }
+  });
 
 
   $('stFiles').addEventListener('click', () => { window.location.href = 'documents-upload.html'; });
