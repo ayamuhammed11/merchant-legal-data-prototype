@@ -6,22 +6,26 @@ A single-file HTML prototype for recording a merchant's document information as 
 
 ## What it does
 
-It lives as a **Document Info** sub-tab beside **All documents** on a merchant account. The page starts empty.
+It lives as a **Document Info** sub-tab beside **All documents** on a merchant account, and reads as a work queue.
 
-1. The agent clicks **Add document info** and picks a document type from a plain list of names.
-2. That type gets its own card with the fields defined for it.
-3. The agent types the values as text and saves. Everything stays editable afterwards.
+1. The page shows one card per document the merchant has uploaded — there is no "add" step, because what exists is decided by the uploads.
+2. The agent opens a card and types its values as text.
+3. Saving writes them to the account and closes the card. Everything stays editable afterwards.
 
 ## Behaviour
 
-- **One card per document type** — independent header, field grid and save/cancel footer. Saving one card never touches another.
+- **Cards are derived from the uploads** — a document type with no uploaded file gets no card, and a new upload produces one automatically.
+- **Accordion, one card open at a time** — opening a second card closes the first, so the queue stays visible and the page never becomes an endless form.
+- **Collapsing is Cancel** — anything typed and not saved is dropped rather than kept silently. Saving is always explicit.
+- **Status at a glance** — a dot per row: grey untouched, amber partially filled, red a value that fails validation or has expired, green complete. The header counts how many uploaded documents are fully recorded.
 - **Fields come from the type definition**, so the form grows as new types are defined rather than being hardcoded per screen.
 - **Validation** — per-field format rules (National ID = 14 digits, Passport = alphanumeric 6–12, CR = numeric, Tax = 9 digits, IBAN = `EG` + 27 digits) plus expiry-date handling (expired / expiring within 60 days).
 - **Namespaced field keys** — several keys (`full_name`, `date_of_birth`, `gender`, `nationality`, `issue_date`) appear on more than one document type, so values are stored as `<type>.<key>` to keep them independent.
 - **Conditional requirements** — VAT Registration Number only becomes required once VAT Status is set to *Registered*.
-- **Cancel vs. discard** — on a card that was never saved the footer button reads **Cancel** and removes the card entirely; once it holds saved data it reads **Discard changes** and reverts the fields to their last saved values.
 - **Provenance** — every value records who entered it and when, shown under the field. The source is tagged `Manual`, leaving room for an OCR pass to populate the same fields later without changing the screen.
-- **Events** — a full audit trail at the bottom of the page: sections added or cancelled, and every value filled, edited or cleared, each expanding to show the old and new value per field.
+- **Events** — a full audit trail at the bottom of the page: every value filled, edited or cleared, each expanding to show the old and new value per field.
+
+Document review state (approved / pending / rejected) is deliberately out of scope here — this tab is only about keying the values off a document that exists.
 
 ## Running it
 

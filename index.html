@@ -167,6 +167,32 @@
     color: var(--cadet-04); margin-left: 10px; }
   .btn:disabled { opacity: .45; cursor: not-allowed; }
 
+  /* ---------- Accordion card, one per uploaded document ---------- */
+  .acc { background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+  .acc.open { border-color: var(--ocean-20); box-shadow: 0 1px 3px rgba(16,24,40,.06); }
+  .acc-head { display: flex; align-items: flex-start; gap: 14px; width: 100%; text-align: left;
+    background: none; border: none; padding: 18px 20px; cursor: pointer; }
+  .acc-head:hover { background: #FCFCFD; }
+  .acc-head .a-ico { color: var(--cadet-base); flex-shrink: 0; margin-top: 2px; }
+  .acc.open .acc-head .a-ico { color: var(--primary); }
+  .acc-head .a-body { flex: 1; min-width: 0; }
+  .acc-head .a-name { font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 700; color: var(--foreground); }
+  .acc.open .acc-head .a-name { color: var(--primary); }
+  .acc-head .a-ar { font-size: 12.5px; color: var(--cadet-05); direction: rtl; margin-top: 3px; }
+  .acc-head .a-meta { font-size: 12.5px; color: var(--cadet-04); margin-top: 7px; }
+  .acc-head .a-meta.none { color: var(--cadet-05); }
+  .acc-head .a-chev { color: var(--cadet-05); flex-shrink: 0; margin-top: 4px; transition: transform .18s ease; }
+  .acc.open .acc-head .a-chev { transform: rotate(90deg); color: var(--primary); }
+
+  /* Progress dot on the left of each row */
+  .acc-head .a-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 8px;
+    background: var(--cadet-06); box-shadow: 0 0 0 3px var(--border-subtle); }
+  .acc-head .a-dot.done { background: var(--success); box-shadow: 0 0 0 3px var(--success-bg); }
+  .acc-head .a-dot.part { background: var(--warning); box-shadow: 0 0 0 3px var(--warning-bg); }
+  .acc-head .a-dot.err  { background: var(--destructive); box-shadow: 0 0 0 3px var(--destructive-bg); }
+
+  .acc-body { border-top: 1px solid var(--border-subtle); }
+
   /* Empty state when nothing has been added yet */
   .empty-card { border: 1px dashed var(--border); border-radius: 8px; background: #FCFCFD;
     padding: 56px 28px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
@@ -238,34 +264,6 @@
   .ev-changes .arrow { color: var(--cadet-05); margin: 0 4px; }
   .events-empty { display: none; text-align: center; font-size: 13px; color: var(--cadet-05); padding: 26px 0 14px; }
   .events-empty.show { display: block; }
-
-  /* ---------- Add-document modal ---------- */
-  .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(16,24,40,.5); z-index: 80;
-    align-items: flex-start; justify-content: center; padding: 60px 16px; overflow-y: auto; }
-  .modal-backdrop.open { display: flex; }
-  .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 560px; box-shadow: 0 20px 60px rgba(0,0,0,.25);
-    animation: pop .16s ease; }
-  @keyframes pop { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-  .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
-    padding: 22px 24px 16px; border-bottom: 1px solid var(--border-subtle); }
-  .modal-head h2 { font-size: 20px; color: var(--primary); }
-  .modal-head .m-sub { font-size: 13px; color: var(--cadet-04); margin: 6px 0 0; line-height: 1.5; }
-  .modal-close { width: 34px; height: 34px; border: none; background: none; border-radius: 8px; color: var(--cadet-04);
-    cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .modal-close:hover { background: var(--muted); }
-  .modal-body { padding: 16px 24px 24px; }
-  .type-opt { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
-    border: 1px solid var(--border); border-radius: var(--radius); background: #fff;
-    padding: 14px 16px; margin-bottom: 8px; cursor: pointer; }
-  .type-opt:last-child { margin-bottom: 0; }
-  .type-opt:hover { border-color: var(--primary); background: var(--ocean-10); }
-  .type-opt svg.t-ico { color: var(--cadet-04); flex-shrink: 0; }
-  .type-opt:hover svg.t-ico { color: var(--primary); }
-  .type-opt .t-name { flex: 1; min-width: 0; font-size: 14px; font-weight: 600; color: var(--foreground); }
-  .type-opt:hover .t-name { color: var(--primary); }
-  .type-opt .t-go { color: var(--cadet-05); flex-shrink: 0; }
-  .type-opt:hover .t-go { color: var(--primary); }
-  .modal-empty { text-align: center; font-size: 13.5px; color: var(--cadet-04); padding: 26px 0; line-height: 1.55; }
 
   /* ---------- Toast ---------- */
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--primary);
@@ -395,24 +393,19 @@
       <div class="alert info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
         <div class="a-body">
-          Add a document type, then type its information as text. Values are saved on the account and can be edited at any time.
-          The fields shown come from that type's definition in <a href="document-types.html" style="color:var(--link);font-weight:600;">Document Types</a>.
+          One card per document this merchant has uploaded. Open a card to type its values as text —
+          they are saved on the account and can be edited at any time.
+          The fields on each come from that type's definition in <a href="document-types.html" style="color:var(--link);font-weight:600;">Document Types</a>.
         </div>
       </div>
 
-      <!-- The single Add entry point -->
       <div class="section-bar">
         <div>
           <span class="sb-title">Document Info</span>
           <span class="sb-count" id="sbCount"></span>
         </div>
-        <button class="btn btn-primary" id="btnAdd" type="button">
-          <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-          Add document info
-        </button>
       </div>
 
-      <!-- One card per document whose data has been added -->
       <div id="cardsHost"></div>
 
       <!-- ══════════ Events ══════════ -->
@@ -421,7 +414,7 @@
           <svg class="hi ch-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"/></svg>
           <div class="ch-grow">
             <h2>Events</h2>
-            <p class="ch-sub">Full audit trail of this merchant's document info — every document type added or removed, and every value filled, edited or cleared, with the old and new value, who did it and when.</p>
+            <p class="ch-sub">Full audit trail of this merchant's document info — every value filled, edited or cleared, with the old and new value, who did it and when.</p>
           </div>
         </div>
         <div class="card-body">
@@ -429,22 +422,9 @@
           <div class="events-empty" id="eventsEmpty">No events recorded yet — actions on this merchant's document info will appear here.</div>
         </div>
       </div>
+
     </div>
   </main>
-
-  <!-- Choose a document type to add -->
-  <div class="modal-backdrop" id="addBackdrop">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="addTitle">
-      <div class="modal-head">
-        <div>
-          <h2 id="addTitle">Add document info</h2>
-          <p class="m-sub">Choose the document type whose data you want to enter.</p>
-        </div>
-        <button class="modal-close" id="addClose" aria-label="Close"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>
-      </div>
-      <div class="modal-body" id="addOptions"></div>
-    </div>
-  </div>
 
   <div class="toast" id="toast"></div>
 
@@ -590,6 +570,24 @@
     }
   ];
 
+  /* ═══════════════════════════════════════════════════════════════
+     1b. Documents the merchant has uploaded on this account.
+         The cards on this tab are derived from these — there is no
+         "add" step, because what exists is decided by the uploads.
+     ═══════════════════════════════════════════════════════════════ */
+  const ACCOUNT_DOCS = [
+    { id:'d1', type:'nid',     name:'National ID (Front)',   version:'V1' },
+    { id:'d2', type:'nid',     name:'National ID (Back)',    version:'V1' },
+    { id:'d3', type:'cr',      name:'Commercial Register',   version:'V2' },
+    { id:'d4', type:'tax',     name:'Tax ID Card',           version:'V1' },
+    { id:'d5', type:'bank',    name:'Bank Account Letter',   version:'V1' },
+    { id:'d6', type:'utility', name:'Utility Bill',          version:'V1' }
+  ];
+
+  const docsForType = id => ACCOUNT_DOCS.filter(d => d.type === id);
+  /* One card per uploaded document type, in the order the types are defined. */
+  const recordableTypes = () => DOC_TYPES.filter(dt => docsForType(dt.id).length);
+
   /* Field keys repeat across types — full_name, date_of_birth, gender, nationality and
      issue_date all appear on more than one document. Namespace each field by its type so
      the stored values and the DOM ids stay distinct, while `key` keeps the schema's name. */
@@ -603,7 +601,6 @@
      2. Values stored on the account
      ═══════════════════════════════════════════════════════════════ */
   let legalData = {};      // key -> { value, by, at, source }
-  let added = [];          // document type ids the agent has added, in the order they were added
   let events = [];         // full audit trail, newest first
 
   function load() {
@@ -612,27 +609,33 @@
       if (raw) {
         const p = JSON.parse(raw);
         legalData = p.legalData || {};
-        added = (p.added || []).filter(id => DOC_TYPES.some(dt => dt.id === id));
         events = p.events || [];
       }
     } catch (e) { /* start empty */ }
   }
   function persist() {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify({ legalData, added, events })); } catch (e) {}
+    try { localStorage.setItem(STORE_KEY, JSON.stringify({ legalData, events })); } catch (e) {}
   }
 
-  function addType(id) {
-    if (added.indexOf(id) === -1) {
-      added.push(id);
-      addEvent('created', id, 'added the <b>' + esc(DOC_TYPES.find(d => d.id === id).name) + '</b> info section');
-      toast(DOC_TYPES.find(d => d.id === id).name + ' added — enter its info below.');
-    }
-    renderAll();
+  /* ── Accordion state ──
+     One card open at a time. Collapsing is Cancel: the page re-renders from what
+     is stored, so anything typed and not saved is dropped rather than kept
+     silently. Saving writes the values and closes the card. */
+  let openId = null;
+
+  function toggleCard(id) {
+    const dt = DOC_TYPES.find(d => d.id === id);
+    if (!dt) return;
+
+    if (openId === id) { openId = null; renderCards(); return; }
+
+    openId = id;
+    renderCards();
     const card = document.querySelector('[data-doc="' + id + '"]');
     if (card) {
-      card.scrollIntoView({ behavior:'smooth', block:'start' });
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       const first = card.querySelector('.inp');
-      if (first) setTimeout(() => first.focus({ preventScroll: true }), 350);
+      if (first) setTimeout(() => first.focus({ preventScroll: true }), 220);
     }
   }
 
@@ -700,31 +703,12 @@
      5. Render — section bar
      ═══════════════════════════════════════════════════════════════ */
   function renderSectionBar() {
-    const total = DOC_TYPES.length;
-    const remaining = total - added.length;
-    $('sbCount').textContent = added.length
-      ? added.length + ' of ' + total + ' document types recorded'
+    const types = recordableTypes();
+    const done = types.filter(dt => dt.fields.every(f => !isRequired(f) || valueOf(f))).length;
+    $('sbCount').textContent = types.length
+      ? done + ' of ' + types.length + ' uploaded documents fully recorded'
       : '';
-    $('btnAdd').disabled = remaining === 0;
-    $('btnAdd').lastChild.textContent = remaining === 0 ? ' All document types added' : ' Add document info';
   }
-
-  /* ── Chooser: the documents already uploaded on this account ── */
-  const CHEVRON = '<svg class="t-go hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>';
-
-
-  function openAdd() {
-    const remaining = DOC_TYPES.filter(dt => added.indexOf(dt.id) === -1);
-    $('addOptions').innerHTML = remaining.length
-      ? remaining.map(dt =>
-          '<button class="type-opt" data-add="' + dt.id + '" type="button">' +
-            '<svg class="t-ico hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' + dt.icon + '</svg>' +
-            '<span class="t-name">' + esc(dt.name) + '</span>' + CHEVRON +
-          '</button>').join('')
-      : '<div class="modal-empty">Every document type already has a data card on this account.</div>';
-    $('addBackdrop').classList.add('open');
-  }
-  function closeAdd() { $('addBackdrop').classList.remove('open'); }
 
   /* ═══════════════════════════════════════════════════════════════
      6. Render — form for the selected type
@@ -769,43 +753,66 @@
     '</div>';
   }
 
-  /* One card per added document */
-  function cardHTML(dt) {
-    const filled = dt.fields.filter(f => valueOf(f)).length;
-    const stamps = dt.fields.map(f => legalData[f.uid] && legalData[f.uid].at).filter(Boolean);
-    const lastLine = stamps.length
-      ? 'Last saved ' + fmtStamp(Math.max.apply(null, stamps)) + ' by ' + CURRENT_USER
-      : 'Never saved';
+  /* ── One accordion card per uploaded document type ── */
+  const CHEV = '<svg class="a-chev hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>';
 
-    return '<div class="card" data-doc="' + dt.id + '">' +
-      '<div class="card-head">' +
-        '<svg class="hi ch-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' + dt.icon + '</svg>' +
-        '<div class="ch-grow">' +
-          '<h2>' + esc(dt.name) + '</h2>' +
-          '<div class="ch-ar">' + esc(dt.nameAr) + '</div>' +
-          '<p class="ch-sub">' + esc(dt.sub) + '</p>' +
-        '</div>' +
-      '</div>' +
-      '<div class="card-body">' +
-        '<div class="ld-grid">' + dt.fields.map(fieldHTML).join('') + '</div>' +
-      '</div>' +
-      '<div class="card-foot">' +
-        '<span style="font-size:12px;color:var(--cadet-05);">' + filled + ' of ' + dt.fields.length + ' fields filled · ' + esc(lastLine) + '</span>' +
-        '<div style="display:flex;gap:8px;">' +
-          '<button class="btn btn-ghost btn-sm" data-reset="' + dt.id + '">' +
-            (stamps.length ? 'Discard changes' : 'Cancel') + '</button>' +
-          '<button class="btn btn-primary btn-sm" data-save="' + dt.id + '">Save data</button>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
+  function cardHTML(dt) {
+    const isOpen  = openId === dt.id;
+    const filled  = dt.fields.filter(f => valueOf(f)).length;
+    const total   = dt.fields.length;
+    const stamps  = dt.fields.map(f => legalData[f.uid] && legalData[f.uid].at).filter(Boolean);
+    const broken  = dt.fields.some(f => { const s = fieldState(f); return s === 'invalid' || s === 'expired'; });
+    const missing = dt.fields.filter(f => isRequired(f) && fieldState(f) === 'empty').length;
+
+    /* Left-hand dot: grey = untouched, amber = partial, red = needs attention, green = done. */
+    let dot = '';
+    if (broken) dot = ' err';
+    else if (!filled) dot = '';
+    else if (missing) dot = ' part';
+    else dot = ' done';
+
+    let meta;
+    if (!filled) meta = '<span class="a-meta none">Not started · ' + total + ' fields to fill</span>';
+    else meta = '<span class="a-meta">' + filled + ' of ' + total + ' fields filled' +
+      (missing ? ' · ' + missing + ' required still missing' : '') +
+      (stamps.length ? ' · last saved ' + fmtStamp(Math.max.apply(null, stamps)) + ' by ' + CURRENT_USER : '') +
+      '</span>';
+
+    const head =
+      '<button class="acc-head" data-toggle="' + dt.id + '" type="button">' +
+        '<span class="a-dot' + dot + '"></span>' +
+        '<svg class="a-ico hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' + dt.icon + '</svg>' +
+        '<span class="a-body">' +
+          '<span class="a-name">' + esc(dt.name) + '</span>' +
+          '<span class="a-ar">' + esc(dt.nameAr) + '</span>' +
+          meta +
+        '</span>' +
+        CHEV +
+      '</button>';
+
+    const body = isOpen
+      ? '<div class="acc-body">' +
+          '<div class="card-body">' +
+            '<div class="ld-grid">' + dt.fields.map(fieldHTML).join('') + '</div>' +
+          '</div>' +
+          '<div class="card-foot">' +
+            '<span style="font-size:12px;color:var(--cadet-05);">Collapsing this card discards anything not saved.</span>' +
+            '<div style="display:flex;gap:8px;">' +
+              '<button class="btn btn-ghost btn-sm" data-cancel="' + dt.id + '">Cancel</button>' +
+              '<button class="btn btn-primary btn-sm" data-save="' + dt.id + '">Save</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>'
+      : '';
+
+    return '<div class="acc' + (isOpen ? ' open' : '') + '" data-doc="' + dt.id + '">' +
+      head + body + '</div>';
   }
 
   /* ── Events ── */
   const EV_ICON = {
-    created:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>',
     captured: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/></svg>',
-    updated:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992V4.356m0 4.992-3.181-3.183a8.25 8.25 0 0 0-13.803 3.7M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7"/></svg>',
-    deleted:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>'
+    updated:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992V4.356m0 4.992-3.181-3.183a8.25 8.25 0 0 0-13.803 3.7M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7"/></svg>'
   };
 
   function addEvent(type, docId, text, changes) {
@@ -837,20 +844,17 @@
   }
 
   function renderCards() {
-    if (!added.length) {
+    const types = recordableTypes();
+    if (!types.length) {
       $('cardsHost').innerHTML =
         '<div class="empty-card">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>' +
-          '<div class="t">No document info yet</div>' +
-          '<div class="s">Use <b>Add document info</b> above to pick a document type, then type its values as text. Each one gets its own card here.</div>' +
+          '<div class="t">No documents uploaded yet</div>' +
+          '<div class="s">Cards appear here automatically once the merchant uploads a document. Check the <b>All documents</b> tab.</div>' +
         '</div>';
       return;
     }
-    $('cardsHost').innerHTML = added
-      .map(id => DOC_TYPES.find(d => d.id === id))
-      .filter(Boolean)
-      .map(cardHTML)
-      .join('');
+    $('cardsHost').innerHTML = types.map(cardHTML).join('');
   }
 
   /* ═══════════════════════════════════════════════════════════════
@@ -858,7 +862,7 @@
      ═══════════════════════════════════════════════════════════════ */
   function saveDoc(dtId) {
     const dt = DOC_TYPES.find(d => d.id === dtId);
-    /* Named so they cannot shadow the outer `added` list of document types. */
+    /* Counters, named apart from the field values they describe. */
     let nFilled = 0, nEdited = 0, nCleared = 0, nInvalid = 0;
     const changes = [];
 
@@ -895,38 +899,19 @@
       parts.join(', ') + ' on <b>' + esc(dt.name) + '</b>', changes);
 
     persist();
-    /* Re-render only this card, so unsaved edits in other cards survive. */
-    rerenderCard(dt);
-    renderSectionBar();
-    renderEvents();
+    openId = null;           /* saving closes the card and returns to the queue */
+    renderAll();
     toast(nInvalid
       ? 'Saved — ' + nInvalid + (nInvalid > 1 ? ' values still fail' : ' value still fails') + ' validation.'
-      : dt.name + ' info saved to the account.');
+      : dt.name + ' info saved.');
   }
 
-  /* Discard: revert this card to its saved values.
-     If it was never saved, there is nothing to revert to — cancel the card entirely. */
-  function resetDoc(dtId) {
-    const dt = DOC_TYPES.find(d => d.id === dtId);
-    if (!dt) return;
-    const saved = dt.fields.some(f => valueOf(f));
-
-    if (!saved) {
-      added = added.filter(id => id !== dtId);
-      addEvent('deleted', dtId, 'cancelled the <b>' + esc(dt.name) + '</b> info section before saving any value');
-      renderAll();
-      toast(dt.name + ' cancelled.');
-      return;
-    }
-
-    rerenderCard(dt);
+  /* Cancel is the same as collapsing: nothing is written, so re-rendering from
+     what is stored drops whatever was typed. */
+  function cancelCard() {
+    openId = null;
+    renderCards();
     toast('Unsaved changes discarded.');
-  }
-
-  /* Swap one card in place, leaving every other card's unsaved input untouched. */
-  function rerenderCard(dt) {
-    const card = document.querySelector('[data-doc="' + dt.id + '"]');
-    if (card) card.outerHTML = cardHTML(dt);
   }
 
   /* ═══════════════════════════════════════════════════════════════
@@ -935,18 +920,14 @@
   function renderAll() { renderSectionBar(); renderCards(); renderEvents(); }
 
   document.addEventListener('click', e => {
-    const addOpt = e.target.closest('[data-add]');
-    if (addOpt) { closeAdd(); addType(addOpt.getAttribute('data-add')); return; }
-    if (e.target.closest('#btnAdd')) { openAdd(); return; }
     const save = e.target.closest('[data-save]');
     if (save) { saveDoc(save.getAttribute('data-save')); return; }
-    const reset = e.target.closest('[data-reset]');
-    if (reset) { resetDoc(reset.getAttribute('data-reset')); return; }
+    const cancel = e.target.closest('[data-cancel]');
+    if (cancel) { cancelCard(); return; }
+    const head = e.target.closest('[data-toggle]');
+    if (head) { toggleCard(head.getAttribute('data-toggle')); return; }
   });
 
-  $('addClose').addEventListener('click', closeAdd);
-  $('addBackdrop').addEventListener('click', e => { if (e.target === $('addBackdrop')) closeAdd(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAdd(); });
 
   $('stFiles').addEventListener('click', () => { window.location.href = 'documents-upload.html'; });
 
