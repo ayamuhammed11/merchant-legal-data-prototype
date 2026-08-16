@@ -159,12 +159,6 @@
   .alert b { font-weight: 700; }
   .alert .a-body { font-size: 13.5px; }
 
-  /* ---------- Section bar: the one and only Add entry point ---------- */
-  .section-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px;
-    flex-wrap: wrap; margin-bottom: 18px; }
-  .section-bar .sb-title { font-family: 'Outfit', sans-serif; font-size: 19px; font-weight: 700; color: var(--foreground); }
-  .section-bar .sb-count { font-family: 'Noto Sans', sans-serif; font-size: 13px; font-weight: 400;
-    color: var(--cadet-04); margin-left: 10px; }
   .btn:disabled { opacity: .45; cursor: not-allowed; }
 
   /* Prototype-only control — lets this demo toggle between an account with uploads
@@ -175,52 +169,8 @@
   .sim-toggle:hover { border-color: var(--primary); color: var(--primary); background: var(--ocean-10); }
   .sim-toggle.on { border-color: var(--primary); color: var(--primary); background: var(--ocean-10); border-style: solid; }
 
-  /* ---------- Accordion card, one per uploaded document ---------- */
-  .acc { background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
-  .acc.open { border-color: var(--ocean-20); box-shadow: 0 1px 3px rgba(16,24,40,.06); }
-  .acc-head { display: flex; align-items: flex-start; gap: 14px; width: 100%; text-align: left;
-    background: none; border: none; padding: 18px 20px; cursor: pointer; }
-  .acc-head:hover { background: #FCFCFD; }
-  .acc-head .a-ico { color: var(--cadet-base); flex-shrink: 0; margin-top: 2px; }
-  .acc.open .acc-head .a-ico { color: var(--primary); }
-  .acc-head .a-body { flex: 1; min-width: 0; }
-  .acc-head .a-name { font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 700; color: var(--foreground); }
-  .acc.open .acc-head .a-name { color: var(--primary); }
-  .acc-head .a-ar { font-size: 12.5px; color: var(--cadet-05); direction: rtl; margin-top: 3px; }
-  .acc-head .a-meta { font-size: 12.5px; color: var(--cadet-04); margin-top: 7px; }
-  .acc-head .a-meta.none { color: var(--cadet-05); }
-  .acc-head .a-chev { color: var(--cadet-05); flex-shrink: 0; margin-top: 4px; transition: transform .18s ease; }
-  .acc.open .acc-head .a-chev { transform: rotate(90deg); color: var(--primary); }
-
-  /* Progress dot on the left of each row */
-  .acc-head .a-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 8px;
-    background: var(--cadet-06); box-shadow: 0 0 0 3px var(--border-subtle); }
-  .acc-head .a-dot.done { background: var(--success); box-shadow: 0 0 0 3px var(--success-bg); }
-  .acc-head .a-dot.part { background: var(--warning); box-shadow: 0 0 0 3px var(--warning-bg); }
-  .acc-head .a-dot.err  { background: var(--destructive); box-shadow: 0 0 0 3px var(--destructive-bg); }
-
-  .acc-body { border-top: 1px solid var(--border-subtle); }
   .foot-note { font-size: 12px; color: var(--cadet-05); }
   .foot-note.blocked { color: var(--destructive); font-weight: 600; }
-
-  /* Empty state when nothing has been added yet */
-  .empty-card { border: 1px dashed var(--border); border-radius: 8px; background: #FCFCFD;
-    padding: 56px 28px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-  .empty-card svg { width: 40px; height: 40px; color: var(--cadet-06); }
-  .empty-card .t { font-family: 'Outfit', sans-serif; font-size: 19px; font-weight: 700; color: var(--foreground); }
-  .empty-card .s { font-size: 13.5px; color: var(--cadet-04); line-height: 1.55; max-width: 420px; }
-
-  /* ---------- Form card ---------- */
-  .card { background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px; margin-bottom: 20px; }
-  .card-head { display: flex; align-items: flex-start; gap: 12px; padding: 18px 22px; border-bottom: 1px solid var(--border-subtle); }
-  .card-head .ch-icon { color: var(--cadet-base); margin-top: 2px; }
-  .card-head h2 { font-size: 18px; color: var(--foreground); }
-  .card-head .ch-ar { font-size: 13px; color: var(--cadet-05); direction: rtl; margin-top: 4px; }
-  .card-head .ch-sub { font-size: 12.5px; color: var(--cadet-04); line-height: 1.5; margin: 6px 0 0; }
-  .card-head .ch-grow { flex: 1; min-width: 0; }
-  .card-body { padding: 22px; }
-  .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
-    padding: 13px 22px; background: #FCFCFD; border-top: 1px solid var(--border-subtle); border-radius: 0 0 8px 8px; }
 
   .ld-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 20px; }
   .ld-field { display: flex; flex-direction: column; }
@@ -244,6 +194,99 @@
   .f-note { font-size: 11.5px; color: var(--cadet-05); margin-top: 6px; line-height: 1.4; }
   .f-note.error { color: var(--destructive); font-weight: 600; }
   .f-note.warn { color: #92620A; font-weight: 600; }
+
+  /* ---------- All documents: Required / Additional tables ---------- */
+  .docs-card { background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px; overflow: hidden; }
+  .docs-card-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    padding: 18px 22px; border-bottom: 1px solid var(--border-subtle); }
+  .docs-card-head h2 { font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 700; color: var(--foreground); }
+
+  .docs-table-wrap { overflow-x: auto; }
+  .docs-table { width: 100%; border-collapse: collapse; min-width: 760px; }
+  .docs-table thead th { text-align: left; font-size: 11px; font-weight: 700; letter-spacing: .05em;
+    color: var(--cadet-05); text-transform: uppercase; padding: 13px 16px; background: #FAFBFB;
+    border-bottom: 1px solid var(--border-subtle); white-space: nowrap; }
+  .docs-table thead th.dt-check { width: 40px; padding-right: 0; }
+  .docs-table thead th.dt-menu { width: 44px; }
+  .docs-table tbody td { padding: 16px; vertical-align: top; border-bottom: 1px solid var(--border-subtle); font-size: 13.5px; color: var(--foreground); }
+  .docs-table tbody tr:last-child td { border-bottom: none; }
+  .docs-table tbody tr:hover { background: #FCFCFD; }
+  .docs-table tbody tr[data-open-drawer] { cursor: pointer; }
+  .docs-table input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
+  .docs-table input[type="checkbox"]:disabled { cursor: not-allowed; opacity: .4; }
+
+  .doc-name-cell .dn-top { display: flex; align-items: center; gap: 8px; }
+  .doc-name-cell .dn-name { font-weight: 600; color: var(--foreground); }
+  .ver-pill { font-size: 10.5px; font-weight: 700; color: var(--pill-text); background: var(--pill-bg);
+    border-radius: 4px; padding: 2px 6px; }
+  .doc-name-cell .dn-files { margin-top: 4px; display: flex; flex-direction: column; gap: 1px; }
+  .doc-name-cell .dn-files span { font-size: 12px; color: var(--cadet-05); }
+
+  .row-menu { position: relative; }
+  .row-menu-btn { width: 30px; height: 30px; border: none; background: none; border-radius: 6px;
+    color: var(--cadet-04); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .row-menu-btn:hover { background: var(--muted); color: var(--primary); }
+  .row-menu-pop { display: none; position: absolute; right: 0; top: 34px; z-index: 30; min-width: 148px;
+    background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(16,24,40,.14); padding: 6px; }
+  .row-menu-pop.open { display: block; }
+  .row-menu-pop button { display: flex; align-items: center; gap: 9px; width: 100%; text-align: left;
+    background: none; border: none; border-radius: 6px; padding: 9px 10px; font-size: 13px; font-weight: 500;
+    color: var(--foreground); cursor: pointer; }
+  .row-menu-pop button:hover { background: var(--muted); }
+  .row-menu-pop svg { width: 16px; height: 16px; color: var(--cadet-04); flex-shrink: 0; }
+
+  .docs-empty { text-align: center; font-size: 13px; color: var(--cadet-05); padding: 30px 16px; }
+
+  .status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700;
+    letter-spacing: .03em; text-transform: uppercase; border-radius: 20px; padding: 4px 10px; white-space: nowrap; }
+  .status-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .status-badge.ok   { background: var(--success-bg); color: var(--success-text); }
+  .status-badge.warn { background: var(--warning-bg); color: #92620A; }
+  .status-badge.err  { background: var(--destructive-bg); color: var(--destructive); }
+
+  /* ---------- Document drawer ---------- */
+  .drawer-backdrop { display: none; position: fixed; inset: 0; background: rgba(16,24,40,.5); z-index: 90;
+    justify-content: flex-end; }
+  .drawer-backdrop.open { display: flex; }
+  .drawer { width: 460px; max-width: 92vw; height: 100%; background: #fff; box-shadow: -8px 0 30px rgba(16,24,40,.16);
+    display: flex; flex-direction: column; animation: drawerIn .18s ease; }
+  @keyframes drawerIn { from { transform: translateX(28px); opacity: .5; } to { transform: translateX(0); opacity: 1; } }
+  .drawer-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    padding: 20px 22px 16px; border-bottom: 1px solid var(--border-subtle); flex-shrink: 0; }
+  .drawer-head h2 { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700; color: var(--foreground);
+    line-height: 1.3; overflow-wrap: anywhere; }
+  .drawer-sub { display: flex; align-items: center; gap: 10px; margin-top: 7px; }
+  .drawer-status-text { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
+  .drawer-status-text.ok   { color: var(--success-text); }
+  .drawer-status-text.warn { color: #92620A; }
+  .drawer-status-text.err  { color: var(--destructive); }
+  .drawer-close { width: 32px; height: 32px; border: none; background: none; border-radius: 8px; color: var(--cadet-04);
+    cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .drawer-close:hover { background: var(--muted); }
+
+  .drawer-tabs { display: flex; gap: 22px; padding: 0 22px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .drawer-tab { position: relative; background: none; border: none; padding: 13px 0; font-size: 13.5px; font-weight: 600;
+    color: var(--cadet-04); cursor: pointer; }
+  .drawer-tab:hover { color: var(--primary); }
+  .drawer-tab.active { color: var(--primary); }
+  .drawer-tab.active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--primary); }
+
+  .drawer-body { flex: 1; overflow-y: auto; padding: 22px; }
+  .drawer-preview { width: 100%; height: 150px; border: 1px solid var(--border-subtle); border-radius: 8px;
+    background: #FAFBFC; display: flex; align-items: center; justify-content: center; color: var(--cadet-06); margin-bottom: 22px; }
+  .drawer-preview svg { width: 52px; height: 52px; }
+  .drawer-section { margin-bottom: 24px; }
+  .drawer-section-title { font-size: 13px; font-weight: 700; color: var(--foreground); margin-bottom: 4px; }
+  .dsec-meta { font-size: 12px; color: var(--cadet-05); margin-bottom: 14px; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px; }
+  .dg-pair { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .dg-pair.full { grid-column: 1 / -1; }
+  .dg-pair .dg-label { font-size: 10.5px; font-weight: 700; color: var(--cadet-05); text-transform: uppercase; letter-spacing: .03em; }
+  .dg-pair .dg-value { font-size: 13.5px; color: var(--foreground); font-weight: 500; overflow-wrap: break-word; }
+
+  .drawer-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding: 14px 22px; background: #FCFCFD; border-top: 1px solid var(--border-subtle); flex-shrink: 0; }
 
   /* ---------- Events feed ---------- */
   .event-item { display: flex; align-items: flex-start; gap: 16px; padding: 18px 4px;
@@ -385,53 +428,113 @@
         <button class="tab">Logs</button>
       </div>
 
-      <div class="subtabs">
-        <button class="subtab" id="stFiles">
-          <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
-          All documents <span class="tcount">7</span>
-        </button>
-        <button class="subtab active" id="stData">
-          <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9"/></svg>
-          Document Info
-        </button>
-      </div>
-
       <div class="alert info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
         <div class="a-body">
-          One card per document this merchant has uploaded. Open a card to type its values as text —
-          they are saved on the account and can be edited at any time.
-          The fields on each come from that type's definition in <a href="document-types.html" style="color:var(--link);font-weight:600;">Document Types</a>.
+          Click a document to view it, record its info fields as text, and see its audit log. Values are saved on the
+          account and can be edited at any time. The fields shown come from that type's definition in
+          <a href="document-types.html" style="color:var(--link);font-weight:600;">Document Types</a>.
         </div>
       </div>
 
-      <div class="section-bar">
-        <div>
-          <span class="sb-title">Document Info</span>
-          <span class="sb-count" id="sbCount"></span>
-        </div>
-        <button class="sim-toggle" id="btnSimulate" type="button">▶ Simulate: no documents uploaded</button>
-      </div>
-
-      <div id="cardsHost"></div>
-
-      <!-- ══════════ Events ══════════ -->
-      <div class="card" style="margin-top:24px;">
-        <div class="card-head">
-          <svg class="hi ch-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"/></svg>
-          <div class="ch-grow">
-            <h2>Events</h2>
-            <p class="ch-sub">Full audit trail of this merchant's document info — every value filled, edited or cleared, with the old and new value, who did it and when.</p>
+      <div class="docs-card">
+        <div class="docs-card-head">
+          <h2>Required Documents</h2>
+          <div style="display:flex; gap:10px;">
+            <button class="sim-toggle" id="btnSimulate" type="button">▶ Simulate: no documents uploaded</button>
+            <button class="btn btn-outline btn-sm" id="btnDownloadRequired" type="button">
+              <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+              Download all
+            </button>
           </div>
         </div>
-        <div class="card-body">
-          <div id="eventsList"></div>
-          <div class="events-empty" id="eventsEmpty">No events recorded yet — actions on this merchant's document info will appear here.</div>
+        <div class="docs-table-wrap">
+          <table class="docs-table">
+            <thead>
+              <tr>
+                <th class="dt-check"><input type="checkbox" id="checkAllRequired"></th>
+                <th>Document Name</th>
+                <th>Expiry</th>
+                <th>Uploaded by</th>
+                <th>Status</th>
+                <th>Last update</th>
+                <th class="dt-menu"></th>
+              </tr>
+            </thead>
+            <tbody id="requiredDocsBody"></tbody>
+          </table>
+          <div class="docs-empty" id="requiredDocsEmpty" style="display:none;">No documents have been uploaded for this merchant.</div>
+        </div>
+      </div>
+
+      <div class="docs-card" style="margin-top:20px;">
+        <div class="docs-card-head">
+          <h2>Additional Documents</h2>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-outline btn-sm" id="btnDownloadAdditional" type="button">
+              <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+              Download all
+            </button>
+            <button class="btn btn-primary btn-sm" id="btnUploadDoc" type="button">
+              <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z"/></svg>
+              Upload Document
+            </button>
+          </div>
+        </div>
+        <div class="docs-table-wrap">
+          <table class="docs-table">
+            <thead>
+              <tr>
+                <th class="dt-check"><input type="checkbox" disabled></th>
+                <th>Document Name</th>
+                <th>Expiry</th>
+                <th>Uploaded by</th>
+                <th>Status</th>
+                <th>Last update</th>
+                <th class="dt-menu"></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div class="docs-empty">No additional documents have been uploaded for this merchant.</div>
         </div>
       </div>
 
     </div>
   </main>
+
+  <!-- ══════════════════ Document drawer ══════════════════ -->
+  <div class="drawer-backdrop" id="drawerBackdrop">
+    <div class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+      <div class="drawer-head">
+        <div>
+          <h2 id="drawerTitle">Document</h2>
+          <div class="drawer-sub">
+            <span class="ver-pill" id="drawerVersion"></span>
+            <span id="drawerStatus"></span>
+          </div>
+        </div>
+        <button class="drawer-close" id="drawerClose" aria-label="Close" type="button">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="drawer-tabs">
+        <button class="drawer-tab active" id="tabDetails" type="button">Details</button>
+        <button class="drawer-tab" id="tabAudit" type="button">Audit Logs</button>
+      </div>
+      <div class="drawer-body" id="drawerBody">
+        <div id="drawerDetailsPanel"></div>
+        <div id="drawerAuditPanel" style="display:none;"></div>
+      </div>
+      <div class="drawer-foot" id="drawerFoot">
+        <span class="foot-note" id="footNote"></span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" id="drawerCancelBtn" type="button">Cancel</button>
+          <button class="btn btn-primary btn-sm" id="drawerSaveBtn" type="button">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="toast" id="toast"></div>
 
@@ -461,110 +564,178 @@
     'Turkish','Chinese','Indian','Pakistani','Bangladeshi','Filipino','Nigerian','Kenyan','South African','Other'];
   const LEGAL_FORMS = ['Sole proprietorship','LLC','JSC','Partnership','Branch of foreign company'];
 
-  const DOC_TYPES = [
-    {
-      id: 'nid', name: 'National ID (Front & Back)', nameAr: 'بطاقة الرقم القومي',
-      sub: 'Applies to Egyptian owners and authorised signatories. Alternative to Passport, not additional.',
-      icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>',
-      fields: [
-        { key:'national_id_number', label:'National ID Number', type:'text', required:true, pattern:'^\\d{14}$',
-          hint:'14 digits. Encodes century, date of birth, governorate and gender.', placeholder:'29801011234567', side:'Front', verifyAt:'Activation' },
-        { key:'full_name', label:'Full Name (as printed)', type:'text', required:true,
-          hint:'Arabic, exactly as printed. Must match Authorised Manager Name on the CR.', side:'Front', verifyAt:'Activation' },
-        { key:'date_of_birth', label:'Date of Birth', type:'date', required:true,
-          hint:'Derivable from ID digits 2–7. Cross-check against the typed value.', side:'Front', verifyAt:'Activation' },
-        { key:'gender', label:'Gender', type:'dropdown', required:true, options:GENDERS,
-          hint:'Derivable from digit 13 (odd = male, even = female).', side:'Back', verifyAt:'Activation' },
-        { key:'nationality', label:'Nationality', type:'dropdown', required:true, options:NATIONALITIES,
-          hint:'ISO country list, defaults to Egyptian.', side:'Back', verifyAt:'Activation' },
-        { key:'address_on_id', label:'Address on ID', type:'text', required:false, full:true,
-          placeholder:'12 El Nasr St., Nasr City, Cairo', side:'Front' },
-        { key:'id_expiry_date', label:'ID Expiry Date', type:'date', required:true, isExpiry:true,
-          hint:'Must not be in the past at activation.', side:'Back', verifyAt:'Activation' }
-      ]
-    },
-    {
-      id: 'passport', name: 'Passport', nameAr: 'جواز السفر',
-      sub: 'Applies to non-Egyptian owners and signatories. Alternative to National ID, not additional.',
-      icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a8.949 8.949 0 0 0 4.951-1.488A3.987 3.987 0 0 0 13 16h-2a3.987 3.987 0 0 0-3.951 3.512A8.949 8.949 0 0 0 12 21Zm3-11.25a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>',
-      fields: [
-        { key:'passport_number', label:'Passport Number', type:'text', required:true, pattern:'^[A-Za-z0-9]{6,12}$',
-          hint:'Alphanumeric, 6–12 characters. Format varies by country.', placeholder:'A12345678', verifyAt:'Activation' },
-        { key:'full_name', label:'Full Name (as printed)', type:'text', required:true,
-          hint:'Latin characters, as shown in the MRZ. Must match Authorised Manager Name on the CR.', verifyAt:'Activation' },
-        { key:'nationality', label:'Nationality', type:'dropdown', required:true, options:NATIONALITIES,
-          hint:'ISO country list.', verifyAt:'Activation' },
-        { key:'date_of_birth', label:'Date of Birth', type:'date', required:true, verifyAt:'Activation' },
-        { key:'gender', label:'Gender', type:'dropdown', required:true, options:GENDERS, verifyAt:'Activation' },
-        { key:'issuing_country', label:'Issuing Country', type:'dropdown', required:true, options:COUNTRIES,
-          hint:'ISO country list.', verifyAt:'Activation' },
-        { key:'issue_date', label:'Issue Date', type:'date', required:false },
-        { key:'passport_expiry_date', label:'Passport Expiry Date', type:'date', required:true, isExpiry:true,
-          hint:'Must not be in the past at activation.', verifyAt:'Activation' }
-      ]
-    },
-    {
-      id: 'cr', name: 'Commercial Register', nameAr: 'السجل التجاري',
-      sub: 'Applies to all registered companies.',
-      icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>',
-      fields: [
-        { key:'cr_number', label:'CR Number', type:'text', required:true, pattern:'^\\d{1,15}$',
-          hint:'Numeric, as printed on the register.', placeholder:'148237', verifyAt:'Activation' },
-        { key:'registered_company_name', label:'Registered Company Name', type:'text', required:true,
-          hint:'Arabic, exactly as printed. Must match Tax Card name and Bank Account Holder Name.', verifyAt:'Activation' },
-        { key:'legal_form', label:'Legal Form', type:'dropdown', required:true, options:LEGAL_FORMS,
-          hint:'Drives which KYC documents are required.', verifyAt:'Activation' },
-        { key:'registration_office', label:'Registration Office', type:'text', required:true,
-          hint:'Office that issued the register.', placeholder:'Cairo', verifyAt:'Activation' },
-        { key:'registered_activity', label:'Registered Activity', type:'text', required:true, full:true,
-          hint:'Must be consistent with the assigned business industry and MCC.',
-          placeholder:'Retail trade of consumer electronics; online sales', verifyAt:'Both' },
-        { key:'issue_date', label:'Issue Date', type:'date', required:false },
-        { key:'cr_expiry_date', label:'CR Expiry / Renewal Date', type:'date', required:true, isExpiry:true,
-          hint:'Must not be in the past at activation.', verifyAt:'Activation' },
-        { key:'authorised_manager_name', label:'Authorised Manager Name', type:'text', required:true,
-          hint:'Must match the National ID / Passport holder name.', verifyAt:'Activation' },
-        { key:'registered_address', label:'Registered Address', type:'text', required:false, full:true,
-          hint:'Required when enabling in-store / terminals.',
-          placeholder:'12 El Nasr St., Nasr City, Cairo', verifyAt:'Service' }
-      ]
-    },
-    {
-      id: 'tax', name: 'Tax ID Card', nameAr: 'البطاقة الضريبية',
-      sub: 'Applies to all registered companies.',
-      icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25 15 8.25m-5.25.75h.008v.008H9.75V9Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm4.5 4.5h.008v.008h-.008v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>',
-      fields: [
-        { key:'tax_registration_number', label:'Tax Registration Number', type:'text', required:true,
-          pattern:'^\\d{3}-?\\d{3}-?\\d{3}$', hint:'9 digits, e.g. 123-456-789.', placeholder:'123-456-789', verifyAt:'Activation' },
-        { key:'registered_name', label:'Registered Name', type:'text', required:true,
-          hint:'As printed on the tax card. Must match CR Registered Company Name.', verifyAt:'Activation' },
-        { key:'tax_office', label:'Tax Office', type:'text', required:true, placeholder:'Nasr City First', verifyAt:'Activation' },
-        { key:'taxable_activity', label:'Taxable Activity', type:'text', required:false, placeholder:'Retail trade' },
-        { key:'issue_date', label:'Issue Date', type:'date', required:false }
-      ]
-    },
-    {
-      id: 'vat', name: 'VAT Registration Certificate', nameAr: 'شهادة التسجيل بضريبة القيمة المضافة',
-      sub: 'Captured when the merchant is VAT-registered.',
-      icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/>',
-      fields: [
-        { key:'vat_status', label:'VAT Status', type:'select', required:true, options:['Registered','Exempt','Not registered'] },
-        { key:'vat_number', label:'VAT Registration Number', type:'text', required:false, hint:'Required when status is Registered.', placeholder:'987654321' }
-      ]
-    },
-    {
-      id: 'utility', name: 'Utility Bill', nameAr: 'فاتورة مرافق',
-      sub: 'Proof of the business address.',
-      icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>',
-      fields: [
-        { key:'util_provider', label:'Utility Provider', type:'select', required:true, options:['Electricity','Water','Gas','Landline / Internet'] },
-        { key:'util_account', label:'Account / Meter Number', type:'text', required:true, placeholder:'0123456789' },
-        { key:'util_holder', label:'Bill Holder Name', type:'text', required:true, placeholder:'Space X for Trading LLC' },
-        { key:'util_issue', label:'Bill Date', type:'date', required:true },
-        { key:'util_address', label:'Address on Bill', type:'text', required:true, full:true, placeholder:'12 El Nasr St., Nasr City, Cairo' }
-      ]
-    }
+  const PASSPORT_TYPE = {
+    id: 'passport', name: 'Passport', nameAr: 'جواز السفر',
+    sub: 'Applies to non-Egyptian owners and signatories. Alternative to National ID, not additional.',
+    icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a8.949 8.949 0 0 0 4.951-1.488A3.987 3.987 0 0 0 13 16h-2a3.987 3.987 0 0 0-3.951 3.512A8.949 8.949 0 0 0 12 21Zm3-11.25a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>',
+    fields: [
+      { key:'passport_number', label:'Passport Number', type:'text', required:true, pattern:'^[A-Za-z0-9]{6,12}$',
+        hint:'Alphanumeric, 6–12 characters. Format varies by country.', placeholder:'A12345678', verifyAt:'Activation' },
+      { key:'full_name', label:'Full Name (as printed)', type:'text', required:true,
+        hint:'Latin characters, as shown in the MRZ. Must match Authorised Manager Name on the CR.', verifyAt:'Activation' },
+      { key:'nationality', label:'Nationality', type:'dropdown', required:true, options:NATIONALITIES,
+        hint:'ISO country list.', verifyAt:'Activation' },
+      { key:'date_of_birth', label:'Date of Birth', type:'date', required:true, verifyAt:'Activation' },
+      { key:'gender', label:'Gender', type:'dropdown', required:true, options:GENDERS, verifyAt:'Activation' },
+      { key:'issuing_country', label:'Issuing Country', type:'dropdown', required:true, options:COUNTRIES,
+        hint:'ISO country list.', verifyAt:'Activation' },
+      { key:'issue_date', label:'Issue Date', type:'date', required:false },
+      { key:'passport_expiry_date', label:'Passport Expiry Date', type:'date', required:true, isExpiry:true,
+        hint:'Must not be in the past at activation.', verifyAt:'Activation' }
+    ]
+  };
+  const VAT_TYPE = {
+    id: 'vat', name: 'VAT Registration Certificate', nameAr: 'شهادة التسجيل بضريبة القيمة المضافة',
+    sub: 'Captured when the merchant is VAT-registered.',
+    icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/>',
+    fields: [
+      { key:'vat_status', label:'VAT Status', type:'select', required:true, options:['Registered','Exempt','Not registered'] },
+      { key:'vat_number', label:'VAT Registration Number', type:'text', required:false, hint:'Required when status is Registered.', placeholder:'987654321' }
+    ]
+  };
+
+  /* ── Document Types integration ──
+     Passport and VAT are managed here directly — Document Types has no entry
+     for them. Every other document type is generated from the field
+     definitions published by document-types.html (same-origin localStorage):
+     add or edit a "document info field" there and it shows up here with no
+     code change. Falls back to a built-in copy of the same six types so this
+     page still works correctly even before Document Types has been opened
+     once in this browser. */
+  const REGISTRY_KEY = 'kashier.documentTypes.registry';
+  /* Keeps the storage ids these four types have always used, so any
+     previously-saved merchant field values aren't orphaned once their
+     definition starts coming from Document Types instead of being hardcoded. */
+  const ID_MAP = {
+    'National ID': 'nid',
+    'Commercial Registration': 'cr',
+    'Tax Card': 'tax',
+    'Proof of Address': 'utility'
+  };
+  const slug = s => String(s).toLowerCase().trim().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'doc';
+  const ICONS = {
+    'national-id': '<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>',
+    'certificate': '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>',
+    'tax-card': '<path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25 15 8.25m-5.25.75h.008v.008H9.75V9Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm4.5 4.5h.008v.008h-.008v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>',
+    'bank-statement': '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/>',
+    'contract': '<path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75"/>',
+    'proof-address': '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>',
+    'generic': '<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>'
+  };
+  /* Mirrors the six document types seeded in document-types.html, so this
+     page is correct the first time it's opened too, before that page has
+     ever saved anything to localStorage. Patterns are copied verbatim from
+     that page's seed data — Document Types is the source of truth for regex,
+     this is only the fallback used before its own registry has synced.
+     type / required / options / isExpiry aren't concepts Document Types'
+     own editor captures (it only ever stores a field's label and regex),
+     so this doubles as the metadata Document Info enriches live-synced
+     fields with — see buildDocTypesFromRegistry below. */
+  const DEFAULT_REGISTRY = [
+    { id: 1, name: 'National ID', nameAr: 'بطاقة الرقم القومي', kind: 'national-id',
+      desc: 'Front and back of a valid national identity card.',
+      infoFields: [
+        { label: 'National ID Number', type: 'text', required: true, options: [], pattern: '^[0-9]{14}$' },
+        { label: 'Full Name (as printed)', type: 'text', required: true, options: [], pattern: '' },
+        { label: 'Date of Birth', type: 'date', required: true, options: [], pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
+        { label: 'Gender', type: 'dropdown', required: true, options: ['Male','Female'], pattern: '^(Male|Female)$' },
+        { label: 'Nationality', type: 'dropdown', required: true, options: ['Egyptian','Foreign'], pattern: '^(Egyptian|Foreign)$' },
+        { label: 'Address on ID', type: 'text', required: false, options: [], pattern: '' },
+        { label: 'ID Expiry Date', type: 'date', required: true, options: [], isExpiry: true, pattern: '^\\d{4}-\\d{2}-\\d{2}$' }
+      ] },
+    { id: 2, name: 'Commercial Registration', nameAr: 'السجل التجاري', kind: 'certificate',
+      desc: 'Official commercial registration certificate.',
+      infoFields: [
+        { label: 'CR Number', type: 'text', required: true, options: [], pattern: '^[0-9]{4,10}$' },
+        { label: 'Registered Company Name', type: 'text', required: true, options: [], pattern: '' },
+        { label: 'Legal Form', type: 'dropdown', required: true, options: ['Sole proprietorship','LLC','JSC','Partnership','Branch of foreign company'], pattern: '^(Sole proprietorship|LLC|JSC|Partnership|Branch of foreign company)$' },
+        { label: 'Registration Office', type: 'text', required: true, options: [], pattern: '' },
+        { label: 'CR Expiry / Renewal Date', type: 'date', required: true, options: [], isExpiry: true, pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
+        { label: 'Authorised Manager Name', type: 'text', required: true, options: [], pattern: '' }
+      ] },
+    { id: 3, name: 'Tax Card', nameAr: 'البطاقة الضريبية', kind: 'tax-card',
+      desc: 'Valid tax registration card issued by the authority.',
+      infoFields: [
+        { label: 'Tax Registration Number', type: 'text', required: true, options: [], pattern: '^[0-9]{9}$' },
+        { label: 'Registered Name', type: 'text', required: true, options: [], pattern: '' },
+        { label: 'Tax Office', type: 'text', required: true, options: [], pattern: '' },
+        { label: 'Taxable Activity', type: 'text', required: false, options: [], pattern: '' }
+      ] },
+    { id: 4, name: 'Bank Statement', nameAr: 'كشف حساب بنكي', kind: 'bank-statement',
+      desc: 'Recent statement confirming the settlement account.',
+      infoFields: [
+        { label: 'Account Holder Name', type: 'text', required: true, options: [], pattern: '' },
+        { label: 'IBAN', type: 'text', required: true, options: [], pattern: '^EG\\d{27}$' },
+        { label: 'Bank Name', type: 'text', required: true, options: [], pattern: '' }
+      ] },
+    { id: 5, name: 'Signed Contract', nameAr: 'العقد الموقع', kind: 'contract',
+      desc: 'Merchant service agreement, signed and stamped.',
+      infoFields: [
+        { label: 'Authorized Signatory', type: 'text', required: true, options: [], pattern: '' },
+        { label: 'Signature Date', type: 'date', required: true, options: [], pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
+        { label: 'Contract Reference', type: 'text', required: false, options: [], pattern: '' }
+      ] },
+    { id: 6, name: 'Proof of Address', nameAr: 'إثبات العنوان', kind: 'proof-address',
+      desc: 'Utility bill or lease dated within the last 3 months.',
+      infoFields: [
+        { label: 'Address on Document', type: 'text', required: true, options: [], pattern: '' },
+        { label: 'Document Issue Date', type: 'date', required: true, options: [], pattern: '^\\d{4}-\\d{2}-\\d{2}$' }
+      ] }
   ];
+  function loadRegistry() {
+    try {
+      const raw = localStorage.getItem(REGISTRY_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length) return parsed;
+      }
+    } catch (e) { /* fall through to defaults */ }
+    return DEFAULT_REGISTRY;
+  }
+
+  /* Document Types' own editor only ever stores a field's label and regex — it has
+     no notion of input type, required-ness, dropdown options or expiry. So that a
+     live-synced field (Gender, Nationality, an expiry date…) still renders as the
+     right control instead of degrading to a bare optional text box, this looks up
+     that missing shape by (doc-type id + label) from the known field set above.
+     A field Document Types doesn't (yet) know about — newly added there — simply
+     falls back to a plain optional text field, same as before this lookup existed. */
+  const FIELD_META = {};
+  DEFAULT_REGISTRY.forEach(rt => {
+    const id = ID_MAP[rt.name] || slug(rt.name);
+    rt.infoFields.forEach(f => {
+      FIELD_META[id + '|' + f.label] = { type: f.type, required: f.required, options: f.options, isExpiry: !!f.isExpiry };
+    });
+  });
+
+  function buildDocTypesFromRegistry(registry) {
+    return registry
+      .filter(rt => rt.infoFields && rt.infoFields.length)
+      .map(rt => {
+        const id = ID_MAP[rt.name] || slug(rt.name);
+        return {
+          id,
+          name: rt.name,
+          nameAr: rt.nameAr || '',
+          sub: rt.desc || '',
+          icon: ICONS[rt.kind] || ICONS.generic,
+          fields: rt.infoFields.map(f => {
+            const meta = FIELD_META[id + '|' + f.label] || {};
+            return {
+              key: slug(f.label),
+              label: f.label,
+              type: ['dropdown','date','number'].includes(meta.type) ? meta.type : 'text',
+              required: !!meta.required,
+              options: meta.type === 'dropdown' ? (meta.options || []) : undefined,
+              isExpiry: !!meta.isExpiry,
+              pattern: f.pattern || undefined   // regex from Document Types → Document info fields, always live
+            };
+          })
+        };
+      });
+  }
+
+  const DOC_TYPES = [...buildDocTypesFromRegistry(loadRegistry()), PASSPORT_TYPE, VAT_TYPE];
 
   /* ═══════════════════════════════════════════════════════════════
      1b. Documents the merchant has uploaded on this account.
@@ -572,12 +743,26 @@
          "add" step, because what exists is decided by the uploads.
      ═══════════════════════════════════════════════════════════════ */
   const SEED_ACCOUNT_DOCS = [
-    { id:'d1', type:'nid',     name:'National ID (Front)',   version:'V1' },
-    { id:'d2', type:'nid',     name:'National ID (Back)',    version:'V1' },
-    { id:'d3', type:'cr',      name:'Commercial Register',   version:'V2' },
-    { id:'d4', type:'tax',     name:'Tax ID Card',           version:'V1' },
-    { id:'d6', type:'utility', name:'Utility Bill',          version:'V1' }
+    { id:'d1', type:'nid',              name:'National ID (Front)',   version:'V1', file:'national_id_front.pdf' },
+    { id:'d2', type:'nid',              name:'National ID (Back)',    version:'V1', file:'national_id_back.pdf' },
+    { id:'d3', type:'cr',               name:'Commercial Register',   version:'V2', file:'commercial_registration.pdf' },
+    { id:'d4', type:'tax',              name:'Tax ID Card',           version:'V1', file:'tax_id_card.pdf' },
+    { id:'d6', type:'utility',          name:'Utility Bill',          version:'V1', file:'utility_bill.pdf' },
+    { id:'d7', type:'bank_statement',   name:'Bank Statement',        version:'V1', file:'bank_statement.pdf' },
+    { id:'d8', type:'signed_contract',  name:'Signed Contract',       version:'V1', file:'signed_contract.pdf' }
   ];
+
+  /* Display-only metadata for the "All documents" table — expiry, uploader and last-update
+     per document type. Expiry is shown only for the two types Document Info tracks an
+     expiry date for (National ID, Commercial Register), matching that feature exactly. */
+  const DOCS_TABLE_META = {
+    nid:             { expiry: 'Jan 2028', uploadedBy: 'mhegab@elements-ft.com', lastUpdate: 'Today, 3:25 PM' },
+    cr:              { expiry: 'May 2027', uploadedBy: 'mhegab@elements-ft.com', lastUpdate: 'Today, 3:25 PM' },
+    tax:             { expiry: '—',        uploadedBy: 'mhegab@elements-ft.com', lastUpdate: 'Today, 4:45 PM' },
+    utility:         { expiry: '—',        uploadedBy: 'mhegab@elements-ft.com', lastUpdate: 'Today, 5:15 PM' },
+    bank_statement:  { expiry: '—',        uploadedBy: 'mhegab@elements-ft.com', lastUpdate: 'Yesterday, 11:10 AM' },
+    signed_contract: { expiry: '—',        uploadedBy: 'mhegab@elements-ft.com', lastUpdate: 'Sep 20, 2025, 5:31 PM' }
+  };
 
   /* Prototype-only: lets this demo show what the tab looks like on an account
      with nothing uploaded yet, without needing a second HTML file. Not persisted —
@@ -617,35 +802,51 @@
     try { localStorage.setItem(STORE_KEY, JSON.stringify({ legalData, events })); } catch (e) {}
   }
 
-  /* ── Accordion state ──
-     One card open at a time. Collapsing is Cancel: the page re-renders from what
-     is stored, so anything typed and not saved is dropped rather than kept
-     silently. Saving writes the values and closes the card. */
+  /* ── Drawer state ──
+     One document open at a time, in a slide-over panel. Closing (X, backdrop, Escape
+     or Cancel) is a discard: the panel re-renders from what is stored next time it
+     opens, so anything typed and not saved is simply dropped. Saving writes the
+     values and keeps the drawer open on the refreshed data. */
   let openId = null;
+  let activeDrawerTab = 'details';
 
   /* Required-but-empty fields only turn red once the agent has actually reached them —
      by leaving them blank on the way past, or by trying to save with them still empty.
-     Without this a freshly opened card would show every required field as an error. */
+     Without this a freshly opened drawer would show every required field as an error. */
   let touched = new Set();
   let attemptedSave = false;
 
-  function toggleCard(id) {
+  function openDrawer(id) {
     const dt = DOC_TYPES.find(d => d.id === id);
     if (!dt) return;
-
-    if (openId === id) { openId = null; renderCards(); return; }
-
     openId = id;
     touched = new Set();
     attemptedSave = false;
-    renderCards();
-    revalidate();   /* set the Save state from whatever is already stored */
-    const card = document.querySelector('[data-doc="' + id + '"]');
-    if (card) {
-      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      const first = card.querySelector('.inp');
-      if (first) setTimeout(() => first.focus({ preventScroll: true }), 220);
-    }
+    activeDrawerTab = 'details';
+    renderDrawer();
+    $('drawerBackdrop').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    revalidate();
+    const first = document.querySelector('#drawerDetailsPanel .inp');
+    if (first) setTimeout(() => first.focus({ preventScroll: true }), 220);
+  }
+
+  function closeDrawer() {
+    openId = null;
+    $('drawerBackdrop').classList.remove('open');
+    document.body.style.overflow = '';
+    touched = new Set();
+    attemptedSave = false;
+  }
+
+  function switchDrawerTab(which) {
+    activeDrawerTab = which;
+    const isDetails = which === 'details';
+    $('drawerDetailsPanel').style.display = isDetails ? '' : 'none';
+    $('drawerAuditPanel').style.display = isDetails ? 'none' : '';
+    $('drawerFoot').style.display = isDetails ? '' : 'none';
+    $('tabDetails').classList.toggle('active', isDetails);
+    $('tabAudit').classList.toggle('active', !isDetails);
   }
 
 
@@ -678,10 +879,16 @@
     return Math.round((d - today) / 864e5);
   }
 
+  /* A "Number" field (set via the Type dropdown in Document Types) only accepts numeric
+     values. Digits, one optional leading minus, one optional decimal point. */
+  const NUMBER_RE = /^-?\d+(\.\d+)?$/;
+  const isNumberMismatch = (f, v) => f.type === 'number' && v && !NUMBER_RE.test(v.trim());
+
   /* Returns: empty | invalid | expired | expiring | ok — for any value, typed or stored. */
   function stateFor(f, v) {
     if (!v) return 'empty';
     if (f.pattern && !new RegExp(f.pattern).test(v.replace(/\s/g, ''))) return 'invalid';
+    if (isNumberMismatch(f, v)) return 'invalid';
     if (f.isExpiry) {
       const d = daysUntil(v);
       if (d !== null && d < 0) return 'expired';
@@ -701,6 +908,7 @@
      actually reached that field (touched it, or tried to save with it empty). */
   function noteInfo(f, v, flagMissing) {
     const st = stateFor(f, v);
+    if (st === 'invalid' && isNumberMismatch(f, v)) return { cls: 'f-note error', text: 'This field only accepts numbers.' };
     if (st === 'invalid')  return { cls: 'f-note error', text: 'Value does not match the expected format' + (f.hint ? ' — ' + f.hint : '.') };
     if (st === 'empty' && flagMissing) return { cls: 'f-note error', text: 'This field is required.' };
     if (st === 'expired')  return { cls: 'f-note warn',  text: 'Expired on ' + fmtDate(v) + ' — a renewed document is needed.' };
@@ -732,18 +940,7 @@
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     5. Render — section bar
-     ═══════════════════════════════════════════════════════════════ */
-  function renderSectionBar() {
-    const types = recordableTypes();
-    const done = types.filter(dt => dt.fields.every(f => !isRequired(f) || valueOf(f))).length;
-    $('sbCount').textContent = types.length
-      ? done + ' of ' + types.length + ' uploaded documents fully recorded'
-      : '';
-  }
-
-  /* ═══════════════════════════════════════════════════════════════
-     6. Render — form for the selected type
+     5. Render — the field grid inside the drawer
      ═══════════════════════════════════════════════════════════════ */
   function fieldHTML(f) {
     const v = valueOf(f);
@@ -756,9 +953,15 @@
         .concat(f.options.map(o => '<option value="' + esc(o) + '"' + (o === v ? ' selected' : '') + '>' + esc(o) + '</option>'));
       control = '<select class="inp' + (st === 'invalid' ? ' err' : '') + '" id="' + inputId + '" data-key="' + f.key + '">' + opts.join('') + '</select>';
     } else {
-      const type = f.type === 'date' ? 'date' : (f.type === 'number' ? 'number' : 'text');
+      /* Number fields stay type="text" (with a numeric keyboard hint) rather than
+         type="number" — a native number input silently discards anything invalid
+         before it ever reaches app validation, so mistyped values vanish with no
+         error shown. Keeping it text lets stateFor()/noteInfo() below catch and
+         explain the mismatch instead. */
+      const type = f.type === 'date' ? 'date' : 'text';
+      const inputmode = f.type === 'number' ? ' inputmode="decimal"' : '';
       control = '<input class="inp' + (st === 'invalid' || st === 'expired' ? ' err' : '') + '" id="' + inputId + '" data-key="' + f.key +
-        '" type="' + type + '" value="' + esc(v) + '" placeholder="' + esc(f.placeholder || '') + '">';
+        '" type="' + type + '"' + inputmode + ' value="' + esc(v) + '" placeholder="' + esc(f.placeholder || '') + '">';
     }
 
     /* Always render the note element so live validation has something to write into. */
@@ -783,60 +986,75 @@
     '</div>';
   }
 
-  /* ── One accordion card per uploaded document type ── */
-  const CHEV = '<svg class="a-chev hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>';
+  /* ── Drawer · Details tab: preview, document details, and the info-fields form ── */
+  function drawerDetailsHTML(dt, files) {
+    const filled = dt.fields.filter(f => valueOf(f)).length;
+    const total = dt.fields.length;
+    const stamps = dt.fields.map(f => legalData[f.uid] && legalData[f.uid].at).filter(Boolean);
+    const lastLine = stamps.length
+      ? 'Last saved ' + fmtStamp(Math.max.apply(null, stamps)) + ' by ' + CURRENT_USER
+      : 'Not saved yet';
+    const meta = DOCS_TABLE_META[dt.id] || {};
 
-  function cardHTML(dt) {
-    const isOpen  = openId === dt.id;
-    const filled  = dt.fields.filter(f => valueOf(f)).length;
-    const total   = dt.fields.length;
-    const stamps  = dt.fields.map(f => legalData[f.uid] && legalData[f.uid].at).filter(Boolean);
-    const broken  = dt.fields.some(f => { const s = fieldState(f); return s === 'invalid' || s === 'expired'; });
-    const missing = dt.fields.filter(f => isRequired(f) && fieldState(f) === 'empty').length;
+    const pairs = [
+      ['Document Type', dt.name],
+      ['File Name', files.map(f => f.file).filter(Boolean).join(', ') || '—'],
+      ['Uploaded By', meta.uploadedBy || '—'],
+      ['Upload Date', meta.lastUpdate || '—']
+    ];
+    if (meta.expiry && meta.expiry !== '—') pairs.push(['Expiry Date', meta.expiry]);
 
-    /* Left-hand dot: grey = untouched, amber = partial, red = needs attention, green = done. */
-    let dot = '';
-    if (broken) dot = ' err';
-    else if (!filled) dot = '';
-    else if (missing) dot = ' part';
-    else dot = ' done';
+    return (
+      '<div class="drawer-preview">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">' + dt.icon + '</svg>' +
+      '</div>' +
+      '<div class="drawer-section">' +
+        '<div class="drawer-section-title">Document Details</div>' +
+        '<div class="detail-grid">' + pairs.map(([l, v]) =>
+          '<div class="dg-pair"><span class="dg-label">' + esc(l) + '</span><span class="dg-value">' + esc(v) + '</span></div>'
+        ).join('') + '</div>' +
+      '</div>' +
+      '<div class="drawer-section">' +
+        '<div class="drawer-section-title">Document info fields</div>' +
+        '<div class="dsec-meta">' + filled + ' of ' + total + ' fields filled · ' + esc(lastLine) + '</div>' +
+        '<div class="ld-grid">' + dt.fields.map(fieldHTML).join('') + '</div>' +
+      '</div>'
+    );
+  }
 
-    let meta;
-    if (!filled) meta = '<span class="a-meta none">Not started · ' + total + ' fields to fill</span>';
-    else meta = '<span class="a-meta">' + filled + ' of ' + total + ' fields filled' +
-      (missing ? ' · ' + missing + ' required still missing' : '') +
-      (stamps.length ? ' · last saved ' + fmtStamp(Math.max.apply(null, stamps)) + ' by ' + CURRENT_USER : '') +
-      '</span>';
-
-    const head =
-      '<button class="acc-head" data-toggle="' + dt.id + '" type="button">' +
-        '<span class="a-dot' + dot + '"></span>' +
-        '<svg class="a-ico hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' + dt.icon + '</svg>' +
-        '<span class="a-body">' +
-          '<span class="a-name">' + esc(dt.name) + '</span>' +
-          '<span class="a-ar">' + esc(dt.nameAr) + '</span>' +
-          meta +
-        '</span>' +
-        CHEV +
-      '</button>';
-
-    const body = isOpen
-      ? '<div class="acc-body">' +
-          '<div class="card-body">' +
-            '<div class="ld-grid">' + dt.fields.map(fieldHTML).join('') + '</div>' +
-          '</div>' +
-          '<div class="card-foot">' +
-            '<span class="foot-note" id="footNote_' + dt.id + '">Collapsing this card discards anything not saved.</span>' +
-            '<div style="display:flex;gap:8px;">' +
-              '<button class="btn btn-ghost btn-sm" data-cancel="' + dt.id + '">Cancel</button>' +
-              '<button class="btn btn-primary btn-sm" data-save="' + dt.id + '">Save</button>' +
-            '</div>' +
-          '</div>' +
-        '</div>'
+  /* ── Drawer · Audit Logs tab: this document type's events only ── */
+  function eventItemHTML(e) {
+    const detail = e.changes && e.changes.length
+      ? '<ul class="ev-changes">' + e.changes.map(c =>
+          '<li><span class="fld">' + esc(c.label) + '</span> — ' +
+          valueCell(c.from) + '<span class="arrow">→</span>' + valueCell(c.to) + '</li>').join('') + '</ul>'
       : '';
+    return '<div class="event-item">' +
+      '<div class="ev-icon ' + e.type + '">' + (EV_ICON[e.type] || EV_ICON.updated) + '</div>' +
+      '<div class="ev-body">' +
+        '<div class="ev-ts">' + fmtStamp(e.at) + '</div>' +
+        '<div class="ev-sentence"><b>' + esc(e.by) + '</b> ' + e.text + '</div>' +
+        detail +
+      '</div>' +
+    '</div>';
+  }
+  function drawerAuditHTML(dt) {
+    const mine = events.filter(e => e.doc === dt.id);
+    if (!mine.length) return '<div class="events-empty show">No changes recorded yet for this document.</div>';
+    return mine.map(eventItemHTML).join('');
+  }
 
-    return '<div class="acc' + (isOpen ? ' open' : '') + '" data-doc="' + dt.id + '">' +
-      head + body + '</div>';
+  function renderDrawer() {
+    const dt = DOC_TYPES.find(d => d.id === openId);
+    if (!dt) return;
+    const files = docsForType(dt.id);
+    const primary = files[0];
+    $('drawerTitle').textContent = primary ? primary.file : dt.name;
+    $('drawerVersion').textContent = primary ? primary.version : '';
+    $('drawerStatus').innerHTML = '<span class="drawer-status-text ok">Approved</span>';
+    $('drawerDetailsPanel').innerHTML = drawerDetailsHTML(dt, files);
+    $('drawerAuditPanel').innerHTML = drawerAuditHTML(dt);
+    switchDrawerTab(activeDrawerTab);
   }
 
   /* Reads what is currently typed into the open card, keyed by uid — used so a field's
@@ -869,9 +1087,8 @@
      required/optional badge and note, and blocks Save until every value is well-formed
      and every required field is filled. */
   function revalidate() {
-    const card = document.querySelector('.acc.open');
-    if (!card) return;
-    const dt = DOC_TYPES.find(d => d.id === card.getAttribute('data-doc'));
+    if (!openId) return;
+    const dt = DOC_TYPES.find(d => d.id === openId);
     if (!dt) return;
 
     const live = liveValues(dt);
@@ -904,21 +1121,18 @@
     });
 
     const bad = badFields.length, missing = missingFields.length;
-    const saveBtn = card.querySelector('[data-save]');
-    if (saveBtn) saveBtn.disabled = bad > 0 || missing > 0;
+    $('drawerSaveBtn').disabled = bad > 0 || missing > 0;
 
-    const foot = $('footNote_' + dt.id);
-    if (foot) {
-      if (bad || missing) {
-        const parts = [];
-        if (bad)     parts.push(bad     + (bad     > 1 ? ' values not in the expected format'  : ' value not in the expected format'));
-        if (missing) parts.push(missing + (missing > 1 ? ' required fields left empty'         : ' required field left empty'));
-        foot.textContent = parts.join(' and ') + ' — fix ' + (bad + missing > 1 ? 'these' : 'this') + ' to save.';
-        foot.classList.add('blocked');
-      } else {
-        foot.textContent = 'Collapsing this card discards anything not saved.';
-        foot.classList.remove('blocked');
-      }
+    const foot = $('footNote');
+    if (bad || missing) {
+      const parts = [];
+      if (bad)     parts.push(bad     + (bad     > 1 ? ' values not in the expected format'  : ' value not in the expected format'));
+      if (missing) parts.push(missing + (missing > 1 ? ' required fields left empty'         : ' required field left empty'));
+      foot.textContent = parts.join(' and ') + ' — fix ' + (bad + missing > 1 ? 'these' : 'this') + ' to save.';
+      foot.classList.add('blocked');
+    } else {
+      foot.textContent = 'Closing this panel discards anything not saved.';
+      foot.classList.remove('blocked');
     }
     return bad + missing;
   }
@@ -936,39 +1150,6 @@
 
   function valueCell(v) {
     return v ? '<span class="val">' + esc(v) + '</span>' : '<span class="none">empty</span>';
-  }
-
-  function renderEvents() {
-    $('eventsEmpty').classList.toggle('show', !events.length);
-    $('eventsList').innerHTML = events.map(e => {
-      const detail = e.changes && e.changes.length
-        ? '<ul class="ev-changes">' + e.changes.map(c =>
-            '<li><span class="fld">' + esc(c.label) + '</span> — ' +
-            valueCell(c.from) + '<span class="arrow">→</span>' + valueCell(c.to) + '</li>').join('') + '</ul>'
-        : '';
-      return '<div class="event-item">' +
-        '<div class="ev-icon ' + e.type + '">' + (EV_ICON[e.type] || EV_ICON.updated) + '</div>' +
-        '<div class="ev-body">' +
-          '<div class="ev-ts">' + fmtStamp(e.at) + '</div>' +
-          '<div class="ev-sentence"><b>' + esc(e.by) + '</b> ' + e.text + '</div>' +
-          detail +
-        '</div>' +
-      '</div>';
-    }).join('');
-  }
-
-  function renderCards() {
-    const types = recordableTypes();
-    if (!types.length) {
-      $('cardsHost').innerHTML =
-        '<div class="empty-card">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>' +
-          '<div class="t">No documents uploaded yet</div>' +
-          '<div class="s">Cards appear here automatically once the merchant uploads a document. Check the <b>All documents</b> tab.</div>' +
-        '</div>';
-      return;
-    }
-    $('cardsHost').innerHTML = types.map(cardHTML).join('');
   }
 
   /* ═══════════════════════════════════════════════════════════════
@@ -1043,29 +1224,24 @@
       parts.join(', ') + ' on <b>' + esc(dt.name) + '</b>', changes);
 
     persist();
-    openId = null;           /* saving closes the card and returns to the queue */
     touched = new Set();
     attemptedSave = false;
-    renderAll();
+    renderDrawer();          /* stays open, refreshed with the saved values and audit entry */
+    renderRequiredDocs();
     toast(dt.name + ' info saved.');
   }
 
-  /* Cancel is the same as collapsing: nothing is written, so re-rendering from
-     what is stored drops whatever was typed. */
+  /* Cancel discards: closing the drawer re-renders from what is stored next time it
+     opens, so anything typed and not saved is simply dropped. */
   function cancelCard() {
-    openId = null;
-    touched = new Set();
-    attemptedSave = false;
-    renderCards();
+    closeDrawer();
     toast('Unsaved changes discarded.');
   }
 
   /* Flip between the seeded uploads and an account with nothing uploaded. */
   function toggleSimulation() {
     simulateNoUploads = !simulateNoUploads;
-    openId = null;
-    touched = new Set();
-    attemptedSave = false;
+    if (openId) closeDrawer();
     renderAll();
     toast(simulateNoUploads
       ? 'Simulating an account with no documents uploaded.'
@@ -1079,34 +1255,116 @@
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     8. Wiring
+     8. Render — All documents (Required Documents table)
      ═══════════════════════════════════════════════════════════════ */
-  function renderAll() { renderSectionBar(); renderCards(); renderEvents(); renderSimToggle(); }
+  const KEBAB = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75h.008v.008H12V6.75Zm0 5.25h.008v.008H12V12Zm0 5.25h.008v.008H12v-.008Z"/></svg>';
+  const EYE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>';
+  const DOWNLOAD_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>';
+
+  function rowMenuHTML(rowId) {
+    return '<div class="row-menu" data-row-menu="' + rowId + '">' +
+      '<button class="row-menu-btn" type="button" data-menu-toggle="' + rowId + '" aria-label="Row actions">' + KEBAB + '</button>' +
+      '<div class="row-menu-pop" id="menu_' + rowId + '">' +
+        '<button type="button" data-menu-action="preview" data-menu-row="' + rowId + '">' + EYE_ICON + 'Preview</button>' +
+        '<button type="button" data-menu-action="download" data-menu-row="' + rowId + '">' + DOWNLOAD_ICON + 'Download</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderRequiredDocs() {
+    const types = recordableTypes();
+    const rows = types.map(dt => {
+      const files = docsForType(dt.id);
+      const meta = DOCS_TABLE_META[dt.id] || {};
+      const version = files[0] ? files[0].version : '';
+      return '<tr data-open-drawer="' + dt.id + '">' +
+        '<td class="dt-check"><input type="checkbox" data-row-check="' + dt.id + '"></td>' +
+        '<td><div class="doc-name-cell">' +
+          '<div class="dn-top"><span class="dn-name">' + esc(dt.name) + '</span>' +
+            (version ? '<span class="ver-pill">' + esc(version) + '</span>' : '') + '</div>' +
+          '<div class="dn-files">' + files.map(f => '<span>' + esc(f.file || '') + '</span>').join('') + '</div>' +
+        '</div></td>' +
+        '<td>' + esc(meta.expiry || '—') + '</td>' +
+        '<td>' + esc(meta.uploadedBy || '—') + '</td>' +
+        '<td><span class="status-badge ok"><span class="dot"></span>Approved</span></td>' +
+        '<td>' + esc(meta.lastUpdate || '—') + '</td>' +
+        '<td class="dt-menu">' + rowMenuHTML(dt.id) + '</td>' +
+      '</tr>';
+    });
+    $('requiredDocsBody').innerHTML = rows.join('');
+    $('requiredDocsEmpty').style.display = types.length ? 'none' : '';
+  }
+
+  function closeRowMenus() {
+    document.querySelectorAll('.row-menu-pop.open').forEach(p => p.classList.remove('open'));
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     9. Wiring
+     ═══════════════════════════════════════════════════════════════ */
+  function renderAll() {
+    renderRequiredDocs();
+    renderSimToggle();
+    if (openId) renderDrawer();
+  }
 
   document.addEventListener('click', e => {
     if (e.target.closest('#btnSimulate')) { toggleSimulation(); return; }
-    const save = e.target.closest('[data-save]');
-    if (save) { saveDoc(save.getAttribute('data-save')); return; }
-    const cancel = e.target.closest('[data-cancel]');
-    if (cancel) { cancelCard(); return; }
-    const headEl = e.target.closest('[data-toggle]');
-    if (headEl) { toggleCard(headEl.getAttribute('data-toggle')); return; }
+    if (e.target.closest('#drawerSaveBtn')) { if (openId) saveDoc(openId); return; }
+    if (e.target.closest('#drawerCancelBtn')) { cancelCard(); return; }
+    if (e.target.closest('#drawerClose')) { closeDrawer(); return; }
+    if (e.target === $('drawerBackdrop')) { closeDrawer(); return; }
+    if (e.target.closest('#tabDetails')) { switchDrawerTab('details'); return; }
+    if (e.target.closest('#tabAudit')) { switchDrawerTab('audit'); return; }
+
+    const menuToggle = e.target.closest('[data-menu-toggle]');
+    if (menuToggle) {
+      const id = menuToggle.getAttribute('data-menu-toggle');
+      const pop = $('menu_' + id);
+      const willOpen = !pop.classList.contains('open');
+      closeRowMenus();
+      pop.classList.toggle('open', willOpen);
+      return;
+    }
+    const menuAction = e.target.closest('[data-menu-action]');
+    if (menuAction) {
+      const row = menuAction.getAttribute('data-menu-row');
+      const dt = DOC_TYPES.find(d => d.id === row);
+      const action = menuAction.getAttribute('data-menu-action');
+      closeRowMenus();
+      toast((action === 'preview' ? 'Opens a preview of ' : 'Downloads ') + (dt ? dt.name : 'this document') + '.');
+      return;
+    }
+    if (!e.target.closest('.row-menu')) closeRowMenus();
+
+    if (e.target.closest('#checkAllRequired')) {
+      const checked = e.target.closest('#checkAllRequired').checked;
+      document.querySelectorAll('[data-row-check]').forEach(c => c.checked = checked);
+      return;
+    }
+    if (e.target.closest('#btnDownloadRequired')) { toast('Downloading all required documents.'); return; }
+    if (e.target.closest('#btnDownloadAdditional')) { toast('No additional documents to download.'); return; }
+    if (e.target.closest('#btnUploadDoc')) { toast('Opens the upload dialog for an additional document.'); return; }
+
+    /* Clicking anywhere else on a row — except its checkbox or kebab menu — opens the drawer. */
+    const row = e.target.closest('[data-open-drawer]');
+    if (row && !e.target.closest('[data-row-check]') && !e.target.closest('.row-menu')) {
+      openDrawer(row.getAttribute('data-open-drawer'));
+    }
   });
 
   /* Validate as the agent types, so Save is never a surprise. */
-  document.addEventListener('input', e => { if (e.target.closest('.acc-body')) revalidate(); });
-  document.addEventListener('change', e => { if (e.target.closest('.acc-body')) revalidate(); });
+  document.addEventListener('input', e => { if (e.target.closest('#drawerDetailsPanel')) revalidate(); });
+  document.addEventListener('change', e => { if (e.target.closest('#drawerDetailsPanel')) revalidate(); });
   /* A required field only turns red once the agent has actually left it empty,
-     not the instant the card opens. 'focusout' bubbles, unlike 'blur'. */
+     not the instant the drawer opens. 'focusout' bubbles, unlike 'blur'. */
   document.addEventListener('focusout', e => {
-    if (e.target.classList && e.target.classList.contains('inp') && e.target.closest('.acc-body')) {
+    if (e.target.classList && e.target.classList.contains('inp') && e.target.closest('#drawerDetailsPanel')) {
       touched.add(e.target.id);
       revalidate();
     }
   });
-
-
-  $('stFiles').addEventListener('click', () => { window.location.href = 'documents-upload.html'; });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && openId) closeDrawer(); });
 
   /* Sidebar / mobile */
   $('hamburger').addEventListener('click', () => { $('sidebar').classList.add('open'); $('overlay').classList.add('open'); });
