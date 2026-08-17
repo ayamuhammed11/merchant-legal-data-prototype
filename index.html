@@ -279,11 +279,13 @@
   .drawer-section { margin-bottom: 24px; }
   .drawer-section-title { font-size: 13px; font-weight: 700; color: var(--foreground); margin-bottom: 4px; }
   .dsec-meta { font-size: 12px; color: var(--cadet-05); margin-bottom: 14px; }
-  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px; }
-  .dg-pair { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-  .dg-pair.full { grid-column: 1 / -1; }
-  .dg-pair .dg-label { font-size: 10.5px; font-weight: 700; color: var(--cadet-05); text-transform: uppercase; letter-spacing: .03em; }
-  .dg-pair .dg-value { font-size: 13.5px; color: var(--foreground); font-weight: 500; overflow-wrap: break-word; }
+  .detail-grid { display: flex; flex-direction: column; margin-top: 14px; }
+  .dg-pair { display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 12px 0; border-bottom: 1px solid var(--border-subtle); min-width: 0; }
+  .dg-pair:last-child { border-bottom: none; padding-bottom: 0; }
+  .dg-pair .dg-label { font-size: 12px; font-weight: 600; color: var(--cadet-05); text-transform: uppercase;
+    letter-spacing: .03em; flex-shrink: 0; }
+  .dg-pair .dg-value { font-size: 13.5px; color: var(--foreground); font-weight: 500; text-align: right; overflow-wrap: break-word; }
 
   .drawer-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
     padding: 14px 22px; background: #FCFCFD; border-top: 1px solid var(--border-subtle); flex-shrink: 0; }
@@ -520,10 +522,12 @@
       </div>
       <div class="drawer-tabs">
         <button class="drawer-tab active" id="tabDetails" type="button">Details</button>
+        <button class="drawer-tab" id="tabFields" type="button">Document info fields</button>
         <button class="drawer-tab" id="tabAudit" type="button">Audit Logs</button>
       </div>
       <div class="drawer-body" id="drawerBody">
         <div id="drawerDetailsPanel"></div>
+        <div id="drawerFieldsPanel" style="display:none;"></div>
         <div id="drawerAuditPanel" style="display:none;"></div>
       </div>
       <div class="drawer-foot" id="drawerFoot">
@@ -721,14 +725,26 @@
           icon: ICONS[rt.kind] || ICONS.generic,
           fields: rt.infoFields.map(f => {
             const meta = FIELD_META[id + '|' + f.label] || {};
+            // Field type + validation rules now come LIVE from Document Types
+            // (Text / Number / Date / Dropdown + regex / min-max / date-range / options).
+            // FIELD_META is only a fallback for legacy fields with no live type.
+            const type = ['dropdown','date','number','text'].includes(f.type)
+              ? f.type
+              : (['dropdown','date','number'].includes(meta.type) ? meta.type : 'text');
             return {
               key: slug(f.label),
               label: f.label,
-              type: ['dropdown','date','number'].includes(meta.type) ? meta.type : 'text',
+              type,
               required: !!meta.required,
-              options: meta.type === 'dropdown' ? (meta.options || []) : undefined,
+              options: type === 'dropdown'
+                ? ((f.options && f.options.length) ? f.options : (meta.options || []))
+                : undefined,
               isExpiry: !!meta.isExpiry,
-              pattern: f.pattern || undefined   // regex from Document Types → Document info fields, always live
+              pattern: f.pattern || undefined,                                   // Text: regex
+              min: (f.min != null ? f.min : undefined),                          // Number: min
+              max: (f.max != null ? f.max : undefined),                          // Number: max
+              minDate: f.minDate || undefined,                                   // Date: earliest
+              maxDate: f.maxDate || undefined                                    // Date: latest
             };
           })
         };
@@ -827,8 +843,6 @@
     $('drawerBackdrop').classList.add('open');
     document.body.style.overflow = 'hidden';
     revalidate();
-    const first = document.querySelector('#drawerDetailsPanel .inp');
-    if (first) setTimeout(() => first.focus({ preventScroll: true }), 220);
   }
 
   function closeDrawer() {
@@ -841,12 +855,18 @@
 
   function switchDrawerTab(which) {
     activeDrawerTab = which;
-    const isDetails = which === 'details';
-    $('drawerDetailsPanel').style.display = isDetails ? '' : 'none';
-    $('drawerAuditPanel').style.display = isDetails ? 'none' : '';
-    $('drawerFoot').style.display = isDetails ? '' : 'none';
-    $('tabDetails').classList.toggle('active', isDetails);
-    $('tabAudit').classList.toggle('active', !isDetails);
+    $('drawerDetailsPanel').style.display = which === 'details' ? '' : 'none';
+    $('drawerFieldsPanel').style.display  = which === 'fields'  ? '' : 'none';
+    $('drawerAuditPanel').style.display   = which === 'audit'   ? '' : 'none';
+    /* Only the fields tab has anything to save — the footer follows it. */
+    $('drawerFoot').style.display = which === 'fields' ? '' : 'none';
+    $('tabDetails').classList.toggle('active', which === 'details');
+    $('tabFields').classList.toggle('active', which === 'fields');
+    $('tabAudit').classList.toggle('active', which === 'audit');
+    if (which === 'fields') {
+      const first = document.querySelector('#drawerFieldsPanel .inp');
+      if (first) setTimeout(() => first.focus({ preventScroll: true }), 120);
+    }
   }
 
 
@@ -889,6 +909,15 @@
     if (!v) return 'empty';
     if (f.pattern && !new RegExp(f.pattern).test(v.replace(/\s/g, ''))) return 'invalid';
     if (isNumberMismatch(f, v)) return 'invalid';
+    if (f.type === 'number' && NUMBER_RE.test(v.trim())) {          // Number min/max rule
+      const n = parseFloat(v);
+      if (f.min != null && n < f.min) return 'invalid';
+      if (f.max != null && n > f.max) return 'invalid';
+    }
+    if (f.type === 'date') {                                        // Date earliest/latest rule
+      if (f.minDate && v < f.minDate) return 'invalid';
+      if (f.maxDate && v > f.maxDate) return 'invalid';
+    }
     if (f.isExpiry) {
       const d = daysUntil(v);
       if (d !== null && d < 0) return 'expired';
@@ -909,6 +938,15 @@
   function noteInfo(f, v, flagMissing) {
     const st = stateFor(f, v);
     if (st === 'invalid' && isNumberMismatch(f, v)) return { cls: 'f-note error', text: 'This field only accepts numbers.' };
+    if (st === 'invalid' && f.type === 'number' && NUMBER_RE.test((v || '').trim())) {
+      const n = parseFloat(v);
+      if (f.min != null && n < f.min) return { cls: 'f-note error', text: 'Must be at least ' + f.min + '.' };
+      if (f.max != null && n > f.max) return { cls: 'f-note error', text: 'Must be at most ' + f.max + '.' };
+    }
+    if (st === 'invalid' && f.type === 'date') {
+      if (f.minDate && v < f.minDate) return { cls: 'f-note error', text: 'Must be on or after ' + fmtDate(f.minDate) + '.' };
+      if (f.maxDate && v > f.maxDate) return { cls: 'f-note error', text: 'Must be on or before ' + fmtDate(f.maxDate) + '.' };
+    }
     if (st === 'invalid')  return { cls: 'f-note error', text: 'Value does not match the expected format' + (f.hint ? ' — ' + f.hint : '.') };
     if (st === 'empty' && flagMissing) return { cls: 'f-note error', text: 'This field is required.' };
     if (st === 'expired')  return { cls: 'f-note warn',  text: 'Expired on ' + fmtDate(v) + ' — a renewed document is needed.' };
@@ -960,8 +998,11 @@
          explain the mismatch instead. */
       const type = f.type === 'date' ? 'date' : 'text';
       const inputmode = f.type === 'number' ? ' inputmode="decimal"' : '';
+      const dateAttrs = f.type === 'date'
+        ? (f.minDate ? ' min="' + esc(f.minDate) + '"' : '') + (f.maxDate ? ' max="' + esc(f.maxDate) + '"' : '')
+        : '';
       control = '<input class="inp' + (st === 'invalid' || st === 'expired' ? ' err' : '') + '" id="' + inputId + '" data-key="' + f.key +
-        '" type="' + type + '"' + inputmode + ' value="' + esc(v) + '" placeholder="' + esc(f.placeholder || '') + '">';
+        '" type="' + type + '"' + inputmode + dateAttrs + ' value="' + esc(v) + '" placeholder="' + esc(f.placeholder || '') + '">';
     }
 
     /* Always render the note element so live validation has something to write into. */
@@ -987,15 +1028,9 @@
   }
 
   /* ── Drawer · Details tab: preview, document details, and the info-fields form ── */
+  /* ── Drawer · Details tab: read-only preview + document details, listed one per row ── */
   function drawerDetailsHTML(dt, files) {
-    const filled = dt.fields.filter(f => valueOf(f)).length;
-    const total = dt.fields.length;
-    const stamps = dt.fields.map(f => legalData[f.uid] && legalData[f.uid].at).filter(Boolean);
-    const lastLine = stamps.length
-      ? 'Last saved ' + fmtStamp(Math.max.apply(null, stamps)) + ' by ' + CURRENT_USER
-      : 'Not saved yet';
     const meta = DOCS_TABLE_META[dt.id] || {};
-
     const pairs = [
       ['Document Type', dt.name],
       ['File Name', files.map(f => f.file).filter(Boolean).join(', ') || '—'],
@@ -1012,10 +1047,22 @@
         '<div class="detail-grid">' + pairs.map(([l, v]) =>
           '<div class="dg-pair"><span class="dg-label">' + esc(l) + '</span><span class="dg-value">' + esc(v) + '</span></div>'
         ).join('') + '</div>' +
-      '</div>' +
-      '<div class="drawer-section">' +
-        '<div class="drawer-section-title">Document info fields</div>' +
-        '<div class="dsec-meta">' + filled + ' of ' + total + ' fields filled · ' + esc(lastLine) + '</div>' +
+      '</div>'
+    );
+  }
+
+  /* ── Drawer · Document info fields tab: the editable form ── */
+  function drawerFieldsHTML(dt) {
+    const filled = dt.fields.filter(f => valueOf(f)).length;
+    const total = dt.fields.length;
+    const stamps = dt.fields.map(f => legalData[f.uid] && legalData[f.uid].at).filter(Boolean);
+    const lastLine = stamps.length
+      ? 'Last saved ' + fmtStamp(Math.max.apply(null, stamps)) + ' by ' + CURRENT_USER
+      : 'Not saved yet';
+
+    return (
+      '<div class="drawer-section" style="margin-bottom:0;">' +
+        '<div class="dsec-meta" style="margin-top:0;">' + filled + ' of ' + total + ' fields filled · ' + esc(lastLine) + '</div>' +
         '<div class="ld-grid">' + dt.fields.map(fieldHTML).join('') + '</div>' +
       '</div>'
     );
@@ -1052,6 +1099,7 @@
     $('drawerVersion').textContent = primary ? primary.version : '';
     $('drawerStatus').innerHTML = '<span class="drawer-status-text ok">Approved</span>';
     $('drawerDetailsPanel').innerHTML = drawerDetailsHTML(dt, files);
+    $('drawerFieldsPanel').innerHTML = drawerFieldsHTML(dt);
     $('drawerAuditPanel').innerHTML = drawerAuditHTML(dt);
     switchDrawerTab(activeDrawerTab);
   }
@@ -1314,6 +1362,7 @@
     if (e.target.closest('#drawerClose')) { closeDrawer(); return; }
     if (e.target === $('drawerBackdrop')) { closeDrawer(); return; }
     if (e.target.closest('#tabDetails')) { switchDrawerTab('details'); return; }
+    if (e.target.closest('#tabFields')) { switchDrawerTab('fields'); return; }
     if (e.target.closest('#tabAudit')) { switchDrawerTab('audit'); return; }
 
     const menuToggle = e.target.closest('[data-menu-toggle]');
@@ -1353,12 +1402,12 @@
   });
 
   /* Validate as the agent types, so Save is never a surprise. */
-  document.addEventListener('input', e => { if (e.target.closest('#drawerDetailsPanel')) revalidate(); });
-  document.addEventListener('change', e => { if (e.target.closest('#drawerDetailsPanel')) revalidate(); });
+  document.addEventListener('input', e => { if (e.target.closest('#drawerFieldsPanel')) revalidate(); });
+  document.addEventListener('change', e => { if (e.target.closest('#drawerFieldsPanel')) revalidate(); });
   /* A required field only turns red once the agent has actually left it empty,
      not the instant the drawer opens. 'focusout' bubbles, unlike 'blur'. */
   document.addEventListener('focusout', e => {
-    if (e.target.classList && e.target.classList.contains('inp') && e.target.closest('#drawerDetailsPanel')) {
+    if (e.target.classList && e.target.classList.contains('inp') && e.target.closest('#drawerFieldsPanel')) {
       touched.add(e.target.id);
       revalidate();
     }

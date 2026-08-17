@@ -7,14 +7,16 @@ A single-file HTML prototype for a merchant's Documents tab, where a back-office
 ## What it does
 
 1. **Required Documents** is a table — one row per document type the merchant has uploaded. There is no "add" step: what exists is decided entirely by the uploads.
-2. Clicking a row opens a slide-over drawer for that document, with **Details** and **Audit Logs** tabs.
-3. The Details tab shows a preview placeholder, basic file details (type, file name, uploader, upload date, expiry), and — the core of the prototype — a **Document info fields** section where the agent types that document's data as text.
-4. Saving writes the values to the account and keeps the drawer open, refreshed. The Audit Logs tab shows every change made to that document, and only that document.
+2. Clicking a row opens a slide-over drawer for that document, with three tabs: **Details**, **Document info fields**, and **Audit Logs**.
+3. **Details** is read-only — a preview placeholder and the document's basic details (type, file name, uploader, upload date) listed one per row.
+4. **Document info fields** is where the agent types that document's data as text — the core of the prototype — with its own Save/Cancel footer.
+5. Saving writes the values to the account and keeps the drawer open, refreshed, on that same tab. **Audit Logs** shows every change made to that document, and only that document.
 
 ## Behaviour
 
 - **Rows are derived from the uploads** — a document type with no uploaded file gets no row, and a new upload would produce one automatically.
 - **One drawer at a time.** Closing it (✕, clicking the backdrop, Escape, or Cancel) discards anything typed and not saved — the drawer re-renders from what's stored the next time it opens.
+- **The Save/Cancel footer follows the active tab** — it only shows on Document info fields, since Details and Audit Logs have nothing to save.
 - **Fields come from the type definition**, so the form grows as new types are defined rather than being hardcoded per screen.
 - **Validation** — per-field format rules (National ID = 14 digits, Passport = alphanumeric 6–12, CR = numeric, Tax = 9 digits) plus expiry-date handling (expired / expiring within 60 days).
 - **Save is blocked unless the document is both well-formed and complete** — every entered value must match its expected format, and every required field must be filled, before Save enables. The guard is re-checked on Save itself, so nothing incomplete or malformed can be written however Save was reached. An expired date does not block saving — it is a true fact about the document, just flagged.
